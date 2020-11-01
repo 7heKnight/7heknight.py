@@ -15,12 +15,9 @@ def optParser():
 def ifWindows(domain):
     try:
         result = subprocess.check_output(['ping', '-n', '1', domain])
-        regex = re.search(r"Reply from \d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}: bytes=\d{1,3} time=\d{1,3}ms TTL=\d{1,3}", str(result))
-        regex1 = re.search(r"Reply from \d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}: bytes=\d{1,3} time<\d{1,3}ms TTL=\d{1,3}", str(result))
+        regex = re.search(r"Reply from \d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}:.* TTL=\d{1,3}", str(result))
         if regex:
             return regex.group(0)
-        elif regex1:
-            return regex1.group(0)
         else:
             print('[-] Pingging time out or ping request could not find the host')
             exit(0)
