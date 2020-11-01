@@ -27,6 +27,18 @@ def ifWindows(domain):
     except:
         print("[-] The host timeout")
         exit(0)
+def ifLinux(domain):
+    try:
+        result = subprocess.check_output(['ping', '-c', '1', domain])
+        regex = re.search(r"\d{1,3} .* \d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}.*ms", str(result))
+        if regex:
+            return regex.group(0)
+        else:
+            print('[-] Pingging time out or ping request could not find the host')
+            exit(0)
+    except:
+        print("[-] The host timeout")
+        exit(0)
 
 if __name__ == '__main__':
     options = optParser()
@@ -34,6 +46,7 @@ if __name__ == '__main__':
     os = platform.system().lower()
     if os == 'windows':
         for i in range(1, int(options.TimesToPing)):
-            print(ifWindows(domain))
+            print('[+] '+ifWindows(domain))
     elif os == 'linux':
-        subprocess.call(['ping', '-c', options.TimesToPing, domain])
+        for i in range(1, int(options.TimesToPing)):
+            print('[+] ' + ifLinux(domain))
