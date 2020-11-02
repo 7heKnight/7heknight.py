@@ -1,17 +1,15 @@
 import itertools
 import requests
 import optparse
+import sys
 import re
 
 def aguments():
-    parser = optparse.OptionParser()
-    parser.add_option("-u", dest="URL", help="The URL of the website. E.g: -u http://127.0.0.1/")
+    parser = optparse.OptionParser("Script usage: python " + sys.argv[0] + " <http://link | https://link> -s <Given unclear sub-direction>")
     parser.add_option("-s", "--subdirectory", dest="Subdirectory", help="The sub-directory you going to check. E.g: -s ABCDEF123")
     # parser.add_option("-h", "--help", help="Example given: python filename.py -u http://127.0,0,1/ -sD ABCDE123")
     (options, arguments) = parser.parse_args()
-    if not options.URL:
-        parser.error("\n[-] You need input the URL. <yourscript> -h or <yourscript> --help to find option")
-    elif not options.Subdirectory:
+    if not options.Subdirectory:
         parser.error("\n[-] You need input the URL. <yourscript> -h or <yourscript> --help to find option")
     return options
 
@@ -32,7 +30,7 @@ def dirCheck(directory):
 if __name__=="__main__":
     options = aguments()
     print("[+] Checking...\n")
-    dir = dirCheck(options.URL)
+    dir = dirCheck(sys.argv[1])
     dir = str(dir)
     sub_dir = options.Subdirectory.upper()
     combination = map(''.join, itertools.product(*((c.upper(), c.lower()) for c in sub_dir)))
