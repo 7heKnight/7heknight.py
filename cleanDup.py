@@ -8,8 +8,12 @@ def openAndCheckDir(dir):
     countScan = 0
     log = open(sys.argv[0] + '.log', 'a+')
     for root, dirs, files in os.walk(dir, topdown=True):
+        isScanning = False
         for name in files:
             try:
+                if isScanning == False:
+                    isScanning = True
+                    print('\n[+] Scanning the directory: '+ root+'\n')
                 f = os.path.join(root, name)
                 ff = open(f, 'rb')
                 h = hashMake(ff.read())
