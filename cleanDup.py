@@ -11,7 +11,7 @@ def openAndCheckDir(dir):
         for name in files:
             try:
                 f = os.path.join(root, name)
-                ff = open(f, 'rb', encoding='UTF-8')
+                ff = open(f, 'rb')
                 h = hashMake(ff.read())
                 ff.close()
                 countScan += 1
