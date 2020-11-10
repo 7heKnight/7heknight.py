@@ -1,4 +1,4 @@
-#The Code will hash the data of files and add it into an array, and them compare with others file, if exist, it will remove that file. It will make a file(.log) in the
+#The Code will hash the data of file and put it into an array, and them compare with others file, if exist, it will remove that file. It will make a file(.log) in the
 # same folder
 #Not recommended using it in root directory
 #Maked and tested on Windows 10 pro 20H2 | Python Version: 3.9.0
