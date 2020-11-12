@@ -1,8 +1,8 @@
 # Author: 7heKnight
 # Tested in Windows 10 20H2 | Python: 3.9.0
 # The Code following these structures.
-# netsh wlan show profile
-# netsh wlan show profile <Interface_Name> key=clear
+#   netsh wlan show profile
+#   netsh wlan show profile <Interface_Name> key=clear
 import subprocess
 import ctypes
 import time
