@@ -22,6 +22,7 @@ def argvLen_1():
     result = re.findall(r".*: .*", subprocess.check_output(['netsh', 'wlan', 'show', 'profile'], shell=True).decode('utf-8'))
     for i in result:
         listInterface.append(str(i).replace('    All User Profile     : ', '')) # Remove the matched string
+    print('--- Result ---')
     for i in listInterface:
         (interface, password) = argvLen_2(i)
         if password == '[-] Password not found.':
@@ -53,6 +54,7 @@ if __name__=='__main__':
                 print('\t[*] Get Password from Interface_name: python ' + sys.argv[0] + ' <Interface_name>')
             else:
                 interface, password = argvLen_2(sys.argv[1])
+                print('--- Result ---')
                 print("Interface: " + interface)
                 print("Password: " + password)
         else:
@@ -61,3 +63,4 @@ if __name__=='__main__':
         print('[-] You should put interface name in "Double Quotes".')
         time.sleep(0.1) # 0.1 sec
         exit('[-] Access Denied.')
+    print('---------------------------------------------------------------------------'
