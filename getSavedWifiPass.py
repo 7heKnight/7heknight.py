@@ -19,10 +19,10 @@ def isAdmin():
 
 def argvLen_1():
     listInterface = []
-    result = re.findall(r".*: .*", subprocess.check_output(['netsh', 'wlan', 'show', 'profile'], shell=True).decode('utf-8'))
+    result = re.findall(r".*: .*", subprocess.check_output(['netsh', 'wlan', 'show', 'profile'], shell=True).decode('UTF-8'))
     for i in result:
         listInterface.append(str(i).replace('    All User Profile     : ', '')) # Remove the matched string
-    print('--- Result ---')
+    print('\n--- Result ---\n')
     for i in listInterface:
         (interface, password) = argvLen_2(i)
         if password == '[-] Password not found.':
@@ -35,7 +35,7 @@ def argvLen_1():
 def argvLen_2(interfaceName):
     try:
         interfaceName = interfaceName.replace("\r", '')
-        result = subprocess.check_output(['netsh', 'wlan', 'show', 'profile', interfaceName, 'key=clear'], shell=True).decode('utf-8')
+        result = subprocess.check_output(['netsh', 'wlan', 'show', 'profile', interfaceName, 'key=clear'], shell=True)
         beforePassword = re.search(r'.*Key Content.*:.*', result).group(0)
         password = beforePassword.replace('    Key Content            : ', '')
         return interfaceName, password
@@ -54,13 +54,13 @@ if __name__=='__main__':
                 print('\t[*] Get Password from Interface_name: python ' + sys.argv[0] + ' <Interface_name>')
             else:
                 interface, password = argvLen_2(sys.argv[1])
-                print('--- Result ---')
+                print('\n--- Result ---\n')
                 print("Interface: " + interface)
                 print("Password: " + password)
         else:
+            print('[-] You should put interface name in "Double Quotes".')
+            time.sleep(0.1)  # 0.1 sec
             exit('[-] Argument out of range.')
     else:
-        print('[-] You should put interface name in "Double Quotes".')
-        time.sleep(0.1) # 0.1 sec
-        exit('[-] Access Denied.')
+        exit('\n[-] Access Denied. You should run as administrator.')
     print('---------------------------------------------------------------------------')
