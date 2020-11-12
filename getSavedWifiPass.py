@@ -1,3 +1,8 @@
+# Author: 7heKnight
+# Tested in Windows 10 20H2 | Python: 3.9.0
+# The Code following these structures.
+# netsh wlan show profile
+# netsh wlan show profile <Interface_Name> key=clear
 import subprocess
 import ctypes
 import time
@@ -56,7 +61,3 @@ if __name__=='__main__':
         print('[-] You should put interface name in "Double Quotes".')
         time.sleep(0.1) # 0.1 sec
         exit('[-] Access Denied.')
-
-# The Code following these structures.
-# netsh wlan show profile
-# netsh wlan show profile <Interface_Name> key=clear
