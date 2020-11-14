@@ -19,6 +19,22 @@ def isAdmin():
 
 def readFile():
     listPassword = []
+import subprocess
+import ctypes
+import time
+import sys
+import os
+import re
+
+def isAdmin():
+    try:
+        is_admin = (os.getuid() == 0)
+    except AttributeError:
+        is_admin = ctypes.windll.shell32.IsUserAnAdmin() != 0
+    return is_admin
+
+def readFile():
+    listPassword = []
     if os.path.isfile(os.getcwd() + '\\' + sys.argv[0] + '.txt'):
         f = open(sys.argv[0] + '.txt', 'r')
         listPassword.append(f.read().split('\r'))
@@ -33,7 +49,7 @@ def argvLen_1():
     listInterface = []
     # listPassword = readFile()
     # f = open(sys.argv[0] + '.txt', 'a')
-    result = re.findall(r'All User Profile     : .*', subprocess.check_output(['netsh', 'wlan', 'show', 'profile'], shell=True, encoding='UTF-8'))
+    result = re.findall(r'All User Profile.*', subprocess.check_output(['netsh', 'wlan', 'show', 'profile'], shell=True, encoding='UTF-8'))
     for i in result:
         listInterface.append(str(i).split(': ')[1])
     print('\n--- Result ---\n')
@@ -54,7 +70,7 @@ def argvLen_1():
 def argvLen_2(interfaceName):
     try:
         beforePassword = re.search(r'Key Content.*', subprocess.check_output(['netsh', 'wlan', 'show', 'profile', interfaceName, 'key=clear'], encoding='utf-8')).group(0)
-        password = beforePassword.replace('Key Content            : ', '')
+        password = beforePassword.split(': ')[1]
         return interfaceName, password
     except:
         return '[-] "' + interfaceName + '" not found.', "[-] Password not found."
