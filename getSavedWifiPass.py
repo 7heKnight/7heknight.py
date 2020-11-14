@@ -17,11 +17,25 @@ def isAdmin():
         is_admin = ctypes.windll.shell32.IsUserAnAdmin() != 0
     return is_admin
 
+def readFile():
+    listPassword = []
+    if os.path.isfile(os.getcwd() + '\\' + sys.argv[0] + '.txt'):
+        f = open(sys.argv[0] + '.txt', 'r')
+        listPassword.append(f.read().split('\r'))
+        f.close()
+    elif os.path.isfile(sys.argv[0] + '.txt'):
+        f = open(sys.argv[0] + '.txt', 'r')
+        listPassword.append(f.read().split('\r'))
+        f.close()
+    return listPassword
+
 def argvLen_1():
     listInterface = []
-    result = re.findall(r".*: .*", subprocess.check_output(['netsh', 'wlan', 'show', 'profile'], shell=True).decode('UTF-8'))
+    # listPassword = readFile()
+    # f = open(sys.argv[0] + '.txt', 'a')
+    result = re.findall(r".*: .*", subprocess.check_output(['netsh', 'wlan', 'show', 'profile'], shell=True))
     for i in result:
-        listInterface.append(str(i).replace('    All User Profile     : ', '')) # Remove the matched string
+        listInterface.append(str(i.split(': ')[1]).rstrip())
     print('\n--- Result ---\n')
     for i in listInterface:
         (interface, password) = argvLen_2(i)
@@ -31,18 +45,23 @@ def argvLen_1():
             print("Interface: " + i)
             print("Password:  " + password)
             print("")
+            # if password in listPassword:
+            #     pass
+            # else:
+            #     f.write(password+'\r')
+    # f.close()
 
 def argvLen_2(interfaceName):
     try:
-        interfaceName = interfaceName.replace("\r", '')
         result = subprocess.check_output(['netsh', 'wlan', 'show', 'profile', interfaceName, 'key=clear'], shell=True)
-        beforePassword = re.search(r'.*Key Content.*:.*', result).group(0)
-        password = beforePassword.replace('    Key Content            : ', '')
+        beforePassword = re.search(r'Key Content.*', result).group(0)
+        password = beforePassword.split(": ")[1].rstrip()
         return interfaceName, password
     except:
         return '[-] "' + interfaceName + '" not found.', "[-] Password not found."
 
 if __name__=='__main__':
+    start = time.clock()
     if isAdmin():
         if len(sys.argv) == 1:
             argvLen_1()
@@ -64,3 +83,6 @@ if __name__=='__main__':
     else:
         exit('\n[-] Access Denied. You should run as administrator.')
     print('---------------------------------------------------------------------------')
+    end = time.clock()
+    time.sleep(0.0001)
+    exit('The program processed in ' + str(end-start) + ' second')
