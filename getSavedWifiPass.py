@@ -33,9 +33,9 @@ def argvLen_1():
     listInterface = []
     # listPassword = readFile()
     # f = open(sys.argv[0] + '.txt', 'a')
-    result = re.findall(r".*: .*", subprocess.check_output(['netsh', 'wlan', 'show', 'profile'], shell=True))
+    result = re.findall(r'All User Profile     : .*', subprocess.check_output(['netsh', 'wlan', 'show', 'profile'], shell=True, encoding='UTF-8'))
     for i in result:
-        listInterface.append(str(i.split(': ')[1]).rstrip())
+        listInterface.append(str(i).split(': ')[1])
     print('\n--- Result ---\n')
     for i in listInterface:
         (interface, password) = argvLen_2(i)
@@ -53,15 +53,14 @@ def argvLen_1():
 
 def argvLen_2(interfaceName):
     try:
-        result = subprocess.check_output(['netsh', 'wlan', 'show', 'profile', interfaceName, 'key=clear'], shell=True)
-        beforePassword = re.search(r'Key Content.*', result).group(0)
-        password = beforePassword.split(": ")[1].rstrip()
+        beforePassword = re.search(r'Key Content.*', subprocess.check_output(['netsh', 'wlan', 'show', 'profile', interfaceName, 'key=clear'], encoding='utf-8')).group(0)
+        password = beforePassword.replace('Key Content            : ', '')
         return interfaceName, password
     except:
         return '[-] "' + interfaceName + '" not found.', "[-] Password not found."
 
 if __name__=='__main__':
-    start = time.clock()
+    start = time.time()
     if isAdmin():
         if len(sys.argv) == 1:
             argvLen_1()
@@ -75,7 +74,7 @@ if __name__=='__main__':
                 interface, password = argvLen_2(sys.argv[1])
                 print('\n--- Result ---\n')
                 print("Interface: " + interface)
-                print("Password: " + password)
+                print("Password:  " + password)
         else:
             print('[-] You should put interface name in "Double Quotes".')
             time.sleep(0.1)  # 0.1 sec
@@ -83,6 +82,6 @@ if __name__=='__main__':
     else:
         exit('\n[-] Access Denied. You should run as administrator.')
     print('---------------------------------------------------------------------------')
-    end = time.clock()
+    end = time.time()
     time.sleep(0.0001)
     exit('The program processed in ' + str(end-start) + ' second')
