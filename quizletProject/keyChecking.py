@@ -1,5 +1,6 @@
-#Usage: 1. python File.py <FileDirection>
-#       2. Python File.py
+# This tool created to remove some annoying key like: a. b. c. , a/ b/ c/,....
+# Usage: 1. python File.py <FileDirection>
+#        2. Python File.py
 import pathlib
 import sys
 import re
