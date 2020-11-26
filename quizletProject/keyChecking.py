@@ -1,7 +1,6 @@
 # This tool created to remove some annoying key like: a. b. c. , a/ b/ c/,....
 # Usage: 1. python File.py <FileDirection>
 #        2. Python File.py
-
 import pathlib
 import time
 import sys
@@ -22,7 +21,7 @@ def parser(fileDir):
         keyParser = keyParser.replace(' ', '')
         keyParser = keyParser.split('|')
         try:
-            if '|' not in r:
+            if '|' not in r :
                 print('[-] Removed the wrong format line: ' + r + '_$') # $ mean end of string
             elif not keyParser[0] == r'' and not keyParser[1] == r'':
                 result = re.sub(r'^[0-9\-#./: ) ]{1,5}', '', r)  # 1-Question
@@ -35,6 +34,7 @@ def parser(fileDir):
                 result = re.sub(r'[ ]{2,99}', ' ', result)  # more than 2 space will place to 1 space
                 result = result.replace('�','')
                 result = result.replace('*','')
+                result = result.replace(' .','.')
                 if result in listQA:
                     count += 1
                 else:
@@ -67,8 +67,7 @@ if __name__=='__main__':
             exit('[-] You need input the Path + File_Name')
     else:
         exit('[-] Terminated')
-    f = open(path + 'Copied_' + name, 'w', encoding='UTF-8')
-
+    f = open(path + name.split('.')[0] + '_copied.' + name.split('.')[1], 'w', encoding='utf-8')
     count = 0
     for i in listQA:
         count+=1
@@ -78,5 +77,4 @@ if __name__=='__main__':
             pass
     f.close()
     time.sleep(0.0001)
-    exit('\n[+] Copied ' + str(count) + ' lines to created file: ' + path + 'Copied_' + name)
-    
+    exit('\n[+] Copied ' + str(count) + ' lines to created file: ' + path + name.split('.')[0] + '_copied.' + name.split('.')[1])
