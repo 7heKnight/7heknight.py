@@ -33,6 +33,8 @@ def parser(fileDir):
                 result = re.sub(r'[0-9\-\[\]]{2,99}[ ][a-zA-Z0-9]{1,5}]', '', result)  # [100] T
                 result = re.sub(r'[0-9\-\[\]]{2,99}[ ]', '', result)  # [100]
                 result = re.sub(r'[ ]{2,99}', ' ', result)  # more than 2 space will place to 1 space
+                result = result.replace('�','')
+                result = result.replace('*','')
                 if result in listQA:
                     count += 1
                 else:
