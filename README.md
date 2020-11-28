@@ -2,12 +2,13 @@
 I build with my inspiration
 
 
-To download and import the library which is pip install <autoGetAndDownload> failed
+For helping who has downloaded and importted library fails with pip install 
   
-   pip install wheel
+Solution:
+  pip install wheel
 
 Go to https://www.lfd.uci.edu/~gohlke/pythonlibs/ and get the thing you need
 
    pip install <Downloaded_File_Dir>
 
-You can get file "get-pip.py" from my folder: https://github.com/7heKnight/7heknight.py/blob/main/get-pip.py
+You can also get pip (get-pip.py) from my folder: https://github.com/7heKnight/7heknight.py/blob/main/get-pip.py
