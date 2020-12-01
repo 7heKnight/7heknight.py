@@ -1,8 +1,8 @@
 # 7heknight.py
-# I build with my inspiration
+ I build with my inspiration
 
 
-# For helping who has downloaded and importted library fails with pip install   
+ For helping who has downloaded and importted library fails with pip install   
 # =>Solution:
   
   pip install wheel
