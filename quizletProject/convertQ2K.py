@@ -29,7 +29,7 @@ def type2FirstParse(rawList):
     for i in range(len(rawList)):
         q = rawList[i].split('~~')[0].replace('\n\n', '\n').replace('  ', ' ') # Changed here
         a = rawList[i].replace('\n', '').replace(' ', '').split('~~')[1].lower()
-        forRegex = re.split(r'[\n ]{1}[a-gA-G]{1}[,.)]{0,1}[ ]{1}', q, flags=re.IGNORECASE) #here
+        forRegex = re.split(r'[\n ]{1}[a-gA-G]{1}[,.)]{1}[ ]{0,1}', q, flags=re.IGNORECASE) #here
         questions.append(forRegex[0].replace('\n', ' '))
         questionAnswer.append(forRegex)
         answers.append(a.lower())
@@ -133,8 +133,11 @@ if __name__=='__main__':
             print('[+] Keys total wrote to file: ' + str(countKey))
         elif sys.argv[1] == r'1':
             fList = parseText_Type1(sys.argv[2])
+            countKey = 0
             for i in fList:
                 file.write(i)
+                countKey += 1
+            print('\n[+] Keys total wrote to file: ' + str(countKey))
     else:
         exit('[-] Wrong format. Usage: python ' + str(sys.argv[0]) + ' (type of raw question) <rawList.txt>')
     print('-------------------------------------------------------------')
