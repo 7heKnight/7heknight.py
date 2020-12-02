@@ -3,16 +3,23 @@ import sys
 import re
 
 def readFile(dir):
+    rawList = []
     try:
-        rawList = []
+        file = open('key.txt', 'r', encoding='UTF-8')
+        key = file.read()
+        file.close()
+    except:
+        pass
+
+    try:
         f = open(dir, 'r', encoding='UTF-8')
         rawList.append(str(f.read()).split('**'))
         rawList[0].pop()
         rawList = rawList[0]
         f.close()
-        return rawList
-    except:
+    except IOError:
         print('[-] Error while opening files.')
+    return key, rawList
 
 def type2FirstParse(rawList):
     answers = []
@@ -20,12 +27,19 @@ def type2FirstParse(rawList):
     finalList = []
     questionAnswer = []
     for i in range(len(rawList)):
-        q = rawList[i].split('~~')[0]
-        a = rawList[i].replace('\n', '').replace('', '').split('~~')[1].lower()
-        forRegex = re.split(r'[\n]{1,2}[a-gA-G]{1}[,.)]{0,1}[ ]{1}', q, flags=re.IGNORECASE)
+        q = rawList[i].split('~~')[0].replace('\n\n', '\n').replace('  ', ' ') # Changed here
+        a = rawList[i].replace('\n', '').replace(' ', '').split('~~')[1].lower()
+        forRegex = re.split(r'[\n ]{1}[a-gA-G]{1}[,.)]{0,1}[ ]{1}', q, flags=re.IGNORECASE) #here
         questions.append(forRegex[0].replace('\n', ' '))
         questionAnswer.append(forRegex)
         answers.append(a.lower())
+
+        # if error sth, print here
+        # print(answers)
+        # print(questions)
+        # print(questionAnswer)
+        # print(finalList)
+
     return finalList, questions, questionAnswer, answers
 
 def parseText_Type2(dir):
@@ -34,13 +48,13 @@ def parseText_Type2(dir):
     pos = {'a': 1, 'b': 2, 'c': 3, 'd': 4, 'e': 5, 't': 'True', 'f': 'False'}
     boolCheck = {'a': 'True', 'b': 'False', 't': 'True', 'f': 'False'}
 
-    rawList = readFile(dir)
+    key, rawList = readFile(dir)
     finalList, questions, questionAnswer, answers = type2FirstParse(rawList)
 
     for i in range(len(questionAnswer)):
         position = pos.get(answers[i])
         try:
-            if not position == 'True' or position == 'False':
+            if not (position == 'True' or position == 'False'):
                 if 'True B. False' in questionAnswer[i][position]:
                     answerAfterParse.append('True')
                 else:
@@ -51,21 +65,34 @@ def parseText_Type2(dir):
             answerAfterParse.append(boolCheck.get(answers[i]))
 
     for i in range(len(questions)):
-        sub = re.sub('^[0-9a-zA-Z]{1,2}[.)]{1}[ ]{1}', ' ', questions[i].replace('  ', ' '))
+        sub = re.sub('^[ ]{0,1}[0-9a-zA-Z]{1,2}[.)]{1}[ ]{1}', '', questions[i].replace('  ', ' '))
+        sub = re.sub('^[ ]{1,2}', '', sub)
         try:
-            key = str(sub) + '|' + answerAfterParse[i]
-            if key in finalList:
-                pass
+            if not (str(sub) == '' and answerAfterParse[i] == ''):
+                keyParsed = str(sub) + '|' + answerAfterParse[i]
+                if keyParsed in key:
+                    pass
+                else:
+                    finalList.append(keyParsed + '\n')
             else:
-                finalList.append(key + '\n')
+                pass
         except:
             if len(answers[i]) > 2:
-                finalList.append(str(sub)+'|'+str(answers[i]))
+                keyParsed = str(sub) + '|' + answers[i]
+                if keyParsed in key:
+                    pass
+                else:
+                    finalList.append(keyParsed + '\n')
             else:
                 errorList.append(str(sub)+'|')
+    # if error sth, print here
+    # print(answers)
+    # print(questions)
+    # print(questionAnswer)
+    # print(finalList)
     return finalList, errorList
 
-def type1FirstParse(rawList):
+def type1FirstParse(key, rawList):
     finalList = []
     for i in range(len(rawList)):
         question = rawList[i].replace('\n', ' ').replace('  ', ' ').split('~~')[0]
@@ -73,19 +100,19 @@ def type1FirstParse(rawList):
         question = re.sub('^[0-9]{1,3}[.) ]{1,3}', '', question)
         question = re.sub('^[a-z]{1,2}[=]{1}[0-9]{1,3}[ ]{1,2}', '', question, flags=re.IGNORECASE)
         answer = rawList[i].replace('\n', ' ').replace('  ', ' ').split('~~')[1]
-        key = str(question) + '|' + str(answer)
-        if question == '' and answer == '':
-            pass
-        else:
-            if key in finalList:
+        keyParsed = str(question) + '|' + str(answer)
+        if not (question == '' and answer == ''):
+            if keyParsed in key:
                 pass
             else:
-                finalList.append(key + '\n')
+                finalList.append(keyParsed + '\n')
+        else:
+            pass
     return finalList
 
 def parseText_Type1(dir):
-    rawList = readFile(dir)
-    finalList = type1FirstParse(rawList)
+    key, rawList = readFile(dir)
+    finalList = type1FirstParse(key, rawList)
     return finalList
 
 if __name__=='__main__':
@@ -95,12 +122,15 @@ if __name__=='__main__':
         if sys.argv[1] == r'2':
             fList, error = parseText_Type2(sys.argv[2])
             count = 0
+            countKey = 0
             for i in error:
                 count += 1
-                print(i)
+                print(i)    # print list of error
             for i in fList:
-                file.write(i)
-            print('\n[+] Error total: ' + str(count))
+                countKey += 1
+                file.write(i)   # write key to files
+            print('\n[+] Errors total: ' + str(count))
+            print('[+] Keys total wrote to file: ' + str(countKey))
         elif sys.argv[1] == r'1':
             fList = parseText_Type1(sys.argv[2])
             for i in fList:
