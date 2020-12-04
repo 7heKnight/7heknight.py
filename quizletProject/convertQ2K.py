@@ -8,6 +8,8 @@ def readFile(dir):
     try:
         file = open('key.txt', 'r', encoding='UTF-8')
         key = file.read()
+        key = re.sub('[*]{3,99}', '**', key)
+        key = re.sub('[~]{3,99}', '~~', key)
         file.close()
     except:
         pass
@@ -113,7 +115,7 @@ def type3(dir):
     file = open(dir, 'r', encoding='UTF-8')
     arguments = file.read()
     arguments = re.sub('[*]{3,99}', '**', arguments)
-    arguments = re.sub('[~]{3,99}', '**', arguments)
+    arguments = re.sub('[~]{3,99}', '~~', arguments)
     file.close()
     arguments = arguments.split('**')
     arguments.pop()
@@ -133,7 +135,7 @@ def type4(dir):
     dup = 0
     formE = 0
     keyList = []
-
+    
     file = open(dir, 'r', encoding='UTF-8')
     arguments = file.read()
     file.close()
