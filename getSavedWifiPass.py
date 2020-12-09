@@ -18,40 +18,34 @@ def isAdmin():
     return is_admin
 
 def readFile():
-    listPassword = []
-import subprocess
-import ctypes
-import time
-import sys
-import os
-import re
-
-def isAdmin():
-    try:
-        is_admin = (os.getuid() == 0)
-    except AttributeError:
-        is_admin = ctypes.windll.shell32.IsUserAnAdmin() != 0
-    return is_admin
-
-def readFile():
-    listPassword = []
-    if os.path.isfile(os.getcwd() + '\\' + sys.argv[0] + '.txt'):
+    if os.path.isfile(os.getcwd() + r'\' + sys.argv[0] + '.txt'):
         f = open(sys.argv[0] + '.txt', 'r')
-        listPassword.append(f.read().split('\r'))
+        listPassword = f.read().split('\n')
         f.close()
     elif os.path.isfile(sys.argv[0] + '.txt'):
         f = open(sys.argv[0] + '.txt', 'r')
-        listPassword.append(f.read().split('\r'))
+        listPassword = f.read().split('\n')
         f.close()
     return listPassword
 
+def readPwd():
+    try:
+        f = open('ListWifiPassword.txt', 'r')
+        readFile = f.read()
+        f.close()
+        readFile = readFile.split('\n')
+        readFile.pop()
+        return readFile
+    except:
+        return None
+
 def argvLen_1():
+    listPassword = readPwd()
     listInterface = []
-    # listPassword = readFile()
-    # f = open(sys.argv[0] + '.txt', 'a')
-    result = re.findall(r'All User Profile.*', subprocess.check_output(['netsh', 'wlan', 'show', 'profile'], shell=True, encoding='UTF-8'))
-    for i in result:
+    f = open('ListWifiPassword.txt', 'a')
+    for i in re.findall(r'All User Profile.*', subprocess.check_output(['netsh', 'wlan', 'show', 'profile'], encoding='utf-8')):
         listInterface.append(str(i).split(': ')[1])
+    listInterface.pop()
     print('\n--- Result ---\n')
     for i in listInterface:
         (interface, password) = argvLen_2(i)
@@ -61,11 +55,14 @@ def argvLen_1():
             print("Interface: " + i)
             print("Password:  " + password)
             print("")
-            # if password in listPassword:
-            #     pass
-            # else:
-            #     f.write(password+'\r')
-    # f.close()
+            if listPassword == None:
+                f.write(password+'\n')
+            else:
+                if password in listPassword:
+                    pass
+                else:
+                    f.write(password+'\n')
+    f.close()
 
 def argvLen_2(interfaceName):
     try:
