@@ -1,18 +1,25 @@
 import time
 import sys
 import re
-
 HELP = fr'''
+
+---------------------------------------------------------------------------------------------
+
 [*] Usage: python {sys.argv[0]} <Option number> <Question and answer in raw>
     - Option 1: Parsing the question and answer which is have the format like flashcard. It will pass the key if duplicated.
-    - Option 2: Parsing the question have the multichoice and answer is only character. It will pass the key if duplicated.
+    - Option 2: Parsing the question have the multi-choice and answer is only character. It will pass the key if duplicated.
     - Option 3: Swaping the position of question and answer.
     - Option 4: Checking and removing key if each key in wrong form.
+    
+---------------------------------------------------------------------------------------------
 
-** Notes: Option have no duplicated checking so if you want to check, just use tool of Notepad++ (Edit >> Line Operation >> Remove duplicated lines.)\
+* Option 1 and 2 will append to key.txt. Option 3 will not create any but it will overriden the file. Option 4 will create the similar file with extension (*.log)
+
+** Notes: Option have no duplicated checking so if you want to check, just use tool of Notepad++ (Edit >> Line Operation >> Remove duplicated lines.)
+
 *** Export note: Custom on the left must be "~~" and the right custom is "**".
-'''
 
+'''
 def readFile(dir):
     key = None
     rawList = []
@@ -237,9 +244,9 @@ if __name__=='__main__':
         elif sys.argv[1] == r'4':
             type4(sys.argv[2])
         else:
-            exit('\n[-] Option not found!\n' + HELP)
+            exit('\n[-] Option not found!' + HELP)
     else:
-        exit('\n[-] Wrong format.\n'+HELP)
+        exit('\n[-] Wrong format.'+HELP)
     print('-------------------------------------------------------------')
     end = time.time() - start
     time.sleep(0.0000000001)
