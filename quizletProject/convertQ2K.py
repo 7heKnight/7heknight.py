@@ -1,6 +1,7 @@
 import time
 import sys
 import re
+
 HELP = fr'''
 [*] Usage: python {sys.argv[0]} <Option number> <Question and answer in raw>
     - Option 1: Parsing the question and answer which is have the format like flashcard. It will pass the key if duplicated.
@@ -11,6 +12,7 @@ HELP = fr'''
 ** Notes: Option have no duplicated checking so if you want to check, just use tool of Notepad++ (Edit >> Line Operation >> Remove duplicated lines.)\
 *** Export note: Custom on the left must be "~~" and the right custom is "**".
 '''
+
 def readFile(dir):
     key = None
     rawList = []
