@@ -177,7 +177,8 @@ def type3(dir):
             file.write(i.split('"~~"')[1] + '"~~"' + i.split('"~~"')[0] + '"**"')
             count += 1
         file.close()
-    except:
+    except Exception as e:
+        print(e)
         exit('[-] Error unknown.')
     print('\n[+] Overrided position of ' + str(count) + ' lines into File: ' + dir)
 
