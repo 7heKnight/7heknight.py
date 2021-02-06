@@ -33,3 +33,5 @@ def parseHTML(html):
 if __name__ == '__main__':
     html = getHTML()
     parseHTML(html)
+
+# If proxy have uusername&password, gonna connect. http://username:password@ip|domain:port/
