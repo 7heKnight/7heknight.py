@@ -4,7 +4,7 @@ import time
 import requests
 import re
 
-DRIVER = r'C:\webdriver\chromedriver_win32\chromedriver.exe'
+DRIVER = r'driver_location'
 URL = r'https://list.proxylistplus.com/Fresh-HTTP-Proxy-List-1'
 compileIP = re.compile(r'''	<td>(\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3})</td>
     <td>(\w{1,})</td>''')
