@@ -33,4 +33,3 @@ def parseHTML(html):
 if __name__ == '__main__':
     html = getHTML()
     parseHTML(html)
-
