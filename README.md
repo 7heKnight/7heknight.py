@@ -15,3 +15,4 @@ Go to https://www.lfd.uci.edu/~gohlke/pythonlibs/ and get the thing you need
 ###      $pip install <Downloaded_File_Dir>
 
 You can also get pip (get-pip.py) from my folder: https://github.com/7heKnight/7heknight.py/blob/main/get-pip.py
+Or download lastest version on: https://pypi.org/project/pip/
