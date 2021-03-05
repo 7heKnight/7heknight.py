@@ -1,3 +1,4 @@
+from sys import exit
 import os
 
 ls = r''
@@ -9,4 +10,4 @@ for root, dir, f in os.walk('.'):
         lsdir += '"'+i + '"     '
     print('[+] List dir: ' + lsdir)
     print('[+] List FIles: '+ls)
-    break
+    exit(0)
