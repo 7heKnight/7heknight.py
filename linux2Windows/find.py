@@ -5,7 +5,7 @@ import os
 import re
 
 def options():
-    parser = optparse.OptionParser('Syntax: Find <-d Directory> <-n File\'s_Name> <-f File\'s_Type>')
+    parser = optparse.OptionParser('Syntax: Find <-d Directory> <-n File\'s_Name> <-f File\'s_Type> <--content "The content in file"')
     parser.add_option('-d', help=r'Directory.')
     parser.add_option('-f', help=r'File type going to find.')
     parser.add_option('-n', help=r'Name of file going to find.')
