@@ -18,7 +18,7 @@ def options():
 def contentFinder(dir, content):
     with open(dir, 'r') as f:
         try:
-            re.search(content,f.read(),re.I).group(0)
+            re.search(content, f.read(), re.I).group(0)
             return True
         except:
             return False
@@ -37,7 +37,7 @@ def find(directory, fileType, fileName, content):
                 try:
                     currentWorkingDir = os.path.join(root, name)
                     try:
-                        re.search(fileName + '.*[.]{1}' + fileType + '$', currentWorkingDir, re.I).group(0)
+                        re.search(fileName + '.*[.]{1}' + fileType + '$', name, re.I).group(0)
                         if content != None:
                             if contentFinder(currentWorkingDir, content):
                                 print(currentWorkingDir)
