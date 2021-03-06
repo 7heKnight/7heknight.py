@@ -18,7 +18,7 @@ def options():
 def contentFinder(dir, content):
     with open(dir, 'r') as f:
         try:
-            re.search(content,f.read(),re.I)
+            re.search(content,f.read(),re.I).group(0)
             return True
         except:
             return False
