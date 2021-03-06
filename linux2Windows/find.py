@@ -5,13 +5,13 @@ import os
 import re
 
 def options():
-    parser = optparse.OptionParser('Syntax: Find <-d Directory> <-n File\'s_Name> <-f File\'s_Type> <--content "The content in file"')
+    parser = optparse.OptionParser('Syntax: Find <-d Directory> <-n File\'s_Name> <-f File\'s_Type>')
     parser.add_option('-d', help=r'Directory.')
     parser.add_option('-f', help=r'File type going to find.')
     parser.add_option('-n', help=r'Name of file going to find.')
     parser.add_option('--content', help=r'Reading and finding the matched content (This option might take long time).')
     (option, argv) = parser.parse_args()
-    if option.f == None and option.n == None:
+    if option.f == None and option.n == None and option.content == None:
         parser.error('[-] Missing file name and file type.')
     return option
 
