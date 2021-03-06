@@ -9,5 +9,5 @@ for root, dir, f in os.walk('.'):
     for i in dir:
         lsdir += '"'+i + '"     '
     print('[+] List dir: ' + lsdir)
-    print('[+] List FIles: '+ls)
+    print('[+] List Files: '+ls)
     exit(0)
