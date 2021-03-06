@@ -17,9 +17,11 @@ def options():
 
 def contentFinder(dir, content):
     with open(dir, 'r') as f:
-        if content in f.read():
+        try:
+            re.search(content,f.read(),re.I)
             return True
-        return False
+        except:
+            return False
 
 def find(directory, fileType, fileName, content):
     listResult = []
@@ -66,7 +68,7 @@ if __name__=='__main__':
     time.sleep(0.000000000001)
     exit('[+] Program executed successfully.')
 
-# Tested on Windows 10 Professional
+# Tested on Windows 10 Professional v20H2
 # os.getcwd()
 # find -d C:\ -f pdf
 # pyinstaller --onefile sys.argv[0]
