@@ -68,8 +68,8 @@ if __name__=='__main__':
     time.sleep(0.000000000001)
     exit('[+] Program executed successfully.')
 
-# Tested on Windows 10 Professional v20H2
-# os.getcwd()
-# find -d C:\ -f pdf
-# pyinstaller --onefile sys.argv[0]
-# the execution file into C:\Windows\System32
+# Created and tested on Windows 10 Professional v20H2
+# Usage: "find -h" to get more information.
+# E.g: "find -d C:\ -f pdf"
+# Convert to execution file: "pyinstaller --onefile find.py"
+# Put the execution file into "C:\Windows\System32"
