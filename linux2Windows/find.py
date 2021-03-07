@@ -12,7 +12,7 @@ def options():
     parser.add_option('--content', help=r'Reading and finding the matched content (This option might take long time).')
     (option, argv) = parser.parse_args()
     if option.f == None and option.n == None and option.content == None:
-        parser.error('[-] Missing file name and file type.')
+        parser.error('[-] Missing file name, file type and content.')
     return option
 
 def contentFinder(dir, content):
