@@ -5,7 +5,7 @@
  For helping who has downloaded and importted library fails with pip install   
 # =>Solution:
   
-''' python
+''' 
 ###   $pip install wheel
 '''
 
