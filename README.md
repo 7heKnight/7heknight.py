@@ -6,7 +6,7 @@
 # =>Solution:
   
 ''' python
-$pip install wheel
+###   $pip install wheel
 '''
 
 Go to https://www.lfd.uci.edu/~gohlke/pythonlibs/ and get the thing you need
