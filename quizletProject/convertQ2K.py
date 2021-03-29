@@ -1,6 +1,9 @@
 import time
 import sys
 import re
+SPLITQUESTION = r'"~~"'
+SPLITQA= r'"**"'
+
 HELP = fr'''
 
 ---------------------------------------------------------------------------------------------
@@ -9,7 +12,7 @@ HELP = fr'''
     - Option 1: Parsing the question and answer which is have the format like flashcard. It will pass the key if duplicated.
     - Option 2: Parsing the question have the multi-choice and answer is only character. It will pass the key if duplicated.
     - Option 3: Swaping the position of question and answer.
-    - Option 4: Checking and removing key if each key in wrong form.
+    - Option 4: Checking and removing key if each key in wrong form. (Not working)
     
 ---------------------------------------------------------------------------------------------
 
@@ -17,9 +20,15 @@ HELP = fr'''
 
 ** Notes: Option have no duplicated checking so if you want to check, just use tool of Notepad++ (Edit >> Line Operation >> Remove duplicated lines.)
 
-*** Export note: Custom on the left must be "~~" and the right custom is "**".
+*** Export note: Custom on the left must be {SPLITQUESTION} and the right custom is {SPLITQA}.
 
 '''
+
+def removeUnwantted(sub):
+    sub = re.sub(r'[(cC ]{1,}hoose 1 answer[) ]{0,1}', '', sub)
+    sub = re.sub(r'[_]{1,}', '', sub)
+    return sub
+
 def readFile(dir):
     key = None
     rawList = []
@@ -33,7 +42,7 @@ def readFile(dir):
         pass
     try:
         f = open(dir, 'r', encoding='UTF-8')
-        rawList.append(str(f.read()).split('"**"'))
+        rawList.append(str(f.read()).split(SPLITQA))
         rawList[0].pop()
         rawList = rawList[0]
         f.close()
@@ -44,16 +53,20 @@ def readFile(dir):
 def parseQuestion_Type1(key, rawList):
     finalList = []
     for i in range(len(rawList)):
-        question = rawList[i].replace('\n', ' ').replace('  ', ' ').split('"~~"')[0]
+        question = rawList[i].replace('\n', ' ').replace('  ', ' ').split(SPLITQUESTION)[0]
+        question = removeUnwantted(question)
         question = re.sub(r'^[# ]{1,2}', '', question)
         question = re.sub(r'^[tT]/[fF][ ]{0,2}', '', question)
-        question = re.sub(r'^[_]{1,99}[ ]{0,1}', '', question)
+        question = re.sub(r'^[_]{1,}[ ]{0,1}', '', question)
         question = re.sub(r'^[0-9]{1,3}[.) ]{1,3}', '', question)
         question = re.sub(r'^[a-z]{1,2}[=]{1}[0-9]{1,3}[ ]{1,2}', '', question, flags=re.IGNORECASE)
-        question = re.sub(r'[|]{1,99}', '', question)
-        question = re.sub(r'[ :.,]{1,99}$', '', question)
-        answer = rawList[i].replace('\n', ' ').replace('  ', ' ').split('"~~"')[1]
-        answer = re.sub(r'[|]{1,99}', '', answer)
+        question = re.sub(r'^[a _]{1,}', '', question, re.I)
+        question = re.sub(r'[|]{1,}', '', question)
+        question = re.sub(r'[ :.,]{1,}$', '', question)
+        answer = rawList[i].replace('\n', ' ').replace('  ', ' ').split(SPLITQUESTION)[1]
+        answer = re.sub(r'[|]{1,}', '', answer)
+        answer = re.sub(r'^[a-zA-Z]{1}[.]{1}[ ]{0,1}', '', answer)
+        answer = re.sub(r'^[- ]{1,}', '', answer)
         question = re.sub(r'[_]{1,99}[ .]{0,1}$', '', question)
         answer = re.sub(r'[ :.,]{1,99}$', '', answer)
         keyParsed = str(question)+ '|' + str(answer)
@@ -73,22 +86,40 @@ def parseText_Type1(dir):
 
 def parseQuestion_Type2(questions, key):
     sub = re.sub(r'^[ \[]{0,1}[0-9a-zA-Z]{1,2}[.)\]]{1}[ ]{1}', '', questions.replace('  ', ' ').replace('|', ''))
+    sub = removeUnwantted(sub)
     sub = re.sub(r'^[tT]/[fF][ ]{0,2}', '', sub)
-    sub = re.sub(r'[,. ]{0,2}[sS][eE][lL][eE][cC][tT][ ]{0,1}[oO][nN][eE][: ]{0,3}', '', sub)
-    sub = re.sub(r'^[_]{1,99}[ ]{0,1}', '', sub)
+    sub = re.sub(r'^[Marks ]{1,}:[ ]{1,}[0-9 ]{1,}', '', sub)
+    sub = re.sub(r'^[aA]{1}[(]{1}[n ]{1,}[)]{1}', '', sub)
+    sub = re.sub(r'("\(Choose 1 answer\) )', '', sub, re.I)
+    sub = re.sub(r'(^"\d{1,}[).]{0,1}[ ]{0,1})', '', sub)
+    sub = re.sub(r'(^")', '', sub)
     sub = re.sub(r'^Question[:]{0,1}[ ]{1,2}[0-9]{1,4}|question[:]{0,1}[ ]{1,2}[0-9]{1,4}|QUESTION[:]{0,1}[ ]{1,2}[0-9]{1,4}', '', sub, re.IGNORECASE)
     sub = re.sub(r'^[ ~:]{1,99}', '', sub)
     sub = re.sub(r'^[0-9]{1,3}[)]{1}[ ]{1}', '', sub)
     sub = re.sub(r'^[0-9]{1,4}[/. ]{1,3}', '', sub)
     sub = re.sub(r'^[A-Z]{1,3}[=]{1,2}[0-9]{1,4}[ ]{0,1}', '', sub)
     sub = re.sub(r'^[(]{1}[0-9]{1,9}[)]{1}[ ]{1}', '', sub)
+    sub = re.sub(r'^[aA_ ]{1,}', '', sub)
+    sub = re.sub(r'Select one or more', '', sub,re.I)
+    sub = re.sub(r'Select one', '', sub,re.I)
+    sub = re.sub(r'Choose one or more', '', sub,re.I)
+    sub = re.sub(r'[( cC]{1,}hoose all that apply', '', sub,re.I)
+    sub = re.sub(r'[ ]{0,1}[cC]hoose one', '', sub, re.I)
+    sub = re.sub(r'[ ]{0,1}[cC]hoose two', '', sub, re.I)
+    sub = re.sub(r'[ ]{0,1}[cC]hoose three', '', sub, re.I)
+    sub = re.sub(r'Choose one answer[. ]{1,}', '', sub, re.I)
     sub = re.sub(r'[*: ]{1,2}$', '', sub).replace('|', '')
+    sub = re.sub(r'[_ .()]{1,}$', '', sub)
     sub = re.sub(r'[*:]{1,2}[ ]{0,3}$', '', sub).replace('|', '')
     key = re.sub(r'[01]{1}/1', '', key).replace('  ', ' ')
     return sub, key
 
 def parseQuestion_Type4(i):
     i = re.sub(r'^[TF/ ]{4}', '', i)
+    i = re.sub(r'("(Choose 1 answer) )', '', i)
+    i = re.sub(r'(^"\d{1,}[).]{0,1}[ ]{0,1})', '', i)
+    i = re.sub(r'(^")', '', i)
+    i = re.sub(r'^[Marks ]{1,}:[ ]{1,}[0-9 ]{1,}', '', i)
     i = re.sub(r'^[_]{1,99}[ ]{0,1}', '', i)
     i = re.sub(r'^[a-zA-Z]{2,3}[=]{1,2}[0-9 ]{1,5}', '', i)
     i = re.sub(r'^[qQ][uU][eE][sS][tT][iI][oO][nN][sS]{0,1}[:]{0,1}[ ]{1,2}[0-9]{1,4}', '', i)
@@ -96,10 +127,12 @@ def parseQuestion_Type4(i):
     i = re.sub(r'^[#~: ]{1,4}', '', i)
     i = re.sub(r'^[0-9]{1,4}[/). ]{1,2}', '', i)
     i = re.sub(r'^[ ]{1,99}', '', i)
+    i = re.sub(r'[(]{0,1}Choose one answer[)]{0,1}[. ]{1,}', '', i, re.I)
     i = re.sub(r'[*,: ]{1,2}[|]{1}', '|', i)
     i = re.sub(r'[|]{1}[ ]{1,9}', '|', i)
     i = re.sub(r'[ ]{2,99}', ' ', i)
     i = re.sub(r'[ (]{1,2}[*]{1}[) ]{1,2}[|]{1}', '|', i)
+    i = re.sub(r'[. ]{1,}$', '', i)
     return i
 
 def type2FirstParse(rawList):
@@ -108,9 +141,11 @@ def type2FirstParse(rawList):
     finalList = []
     questionAnswer = []
     for i in range(len(rawList)):
-        q = rawList[i].split('"~~"')[0].replace('\n\n', '\n').replace('  ', ' ') # Changed here
-        a = rawList[i].replace('\n', '').replace(' ', '').split('"~~"')[1].lower()
-        forRegex = re.split(r'[\n\[ ]{1}[a-gA-G]{1}[,.)\]]{1}[ ]{0,1}', q, flags=re.IGNORECASE) #here
+        q = rawList[i].split(SPLITQUESTION)[0].replace('\n\n', '\n').replace('  ', ' ') # Changed here
+        a = rawList[i].replace('\n', '').replace(' ', '').split(SPLITQUESTION)[1].lower()
+        a = re.sub(r'[.]{1}[ ]{0,1}.*$', '', a)
+        a = re.sub(r'"[ .]{0,}$', '', a)
+        forRegex = re.split(r'[\n\[ ]{1}[a-gA-G]{1}[,.)\]]{1}[ ]{0,1}', q, flags=re.I) #here
         questions.append(forRegex[0].replace('\n', ' '))
         questionAnswer.append(forRegex)
         answers.append(a.lower())
@@ -137,14 +172,13 @@ def parseText_Type2(dir):
                 answerAfterParse.append(position)
         except:
             answerAfterParse.append(boolCheck.get(answers[i]))
-
     for i in range(len(questions)):
-        sub ,key = parseQuestion_Type2(questions[i], key)
+        sub, key = parseQuestion_Type2(questions[i], key)
         try:
             stringQ = str(sub)
-            stringA = re.sub(r'[ ]{1,99}$', '', answerAfterParse[i])
+            stringA = re.sub(r'[ ".]{1,}$', '', answerAfterParse[i])
             if not stringQ.replace(' ', '') == '' and not stringA.replace(' ', '') == '':
-                keyParsed = str(sub) + '|' + answerAfterParse[i]
+                keyParsed = str(sub) + '|' + re.sub(r'[ ".]{1,}$', '', answerAfterParse[i])
                 if keyParsed in key:
                     pass
                 else:
@@ -165,16 +199,16 @@ def parseText_Type2(dir):
 def type3(dir):
     file = open(dir, 'r', encoding='UTF-8')
     arguments = file.read()
-    arguments = re.sub('[*]{3,99}', '', arguments)
-    arguments = re.sub('[~]{3,99}', '', arguments)
+    arguments = re.sub('[*]{3,}', '', arguments)
+    arguments = re.sub('[~]{3,}', '', arguments)
     file.close()
-    arguments = arguments.split('"**"')
+    arguments = arguments.split(SPLITQA)
     arguments.pop()
     count = 0
     try:
         file = open(dir, 'w', encoding='UTF-8')
         for i in arguments:
-            file.write(i.split('"~~"')[1] + '"~~"' + i.split('"~~"')[0] + '"**"')
+            file.write(i.split(SPLITQUESTION)[1] + SPLITQUESTION + i.split(SPLITQUESTION)[0] + SPLITQA)
             count += 1
         file.close()
     except Exception as e:
@@ -189,7 +223,7 @@ def type4(dir):
 
     file = open(dir, 'r', encoding='UTF-8')
     arguments = file.read()
-    arguments = re.sub(r'[ ]{1,99}[\n]{1}', '\n', arguments)
+    arguments = re.sub(r'[ ]{1,}[\n]{1}', '\n', arguments)
     file.close()
     arguments = arguments.split('\n')
     arguments.pop()
@@ -253,4 +287,4 @@ if __name__=='__main__':
     time.sleep(0.0000000001)
     exit('Program executed in ' + str(end) + ' seconds')
 
-# Notes: This is Code just applied with the parser for the answer is: "~~" and next question is: "**"
+# fr"""Notes: This is Code just applied with the parser for the answer is: {SPLITQUESTION} and next question is: {SPLITQA}"""
