@@ -4,8 +4,18 @@ import re
 SPLITQUESTION = r'"~~"'
 SPLITQA= r'"**"'
 
-HELP = fr'''
+BANNER = r'''
+===============================================================================
+  ___        _          ____                            |
+ / _ \ _   _(_)____    |  _ \ __ _ _ __ ___  ___ _ __   |
+| | | | | | | |_  /____| |_) / _` | '__/ __|/ _ \ '__|  |   
+| |_| | |_| | |/ /_____|  __/ (_| | |  \__ \  __/ |     |
+ \__\_\\__,_|_/___|    |_|   \__,_|_|  |___/\___|_|     |   Verion: 1
+                                                        |   Made by 7heKnight
+===============================================================================
+'''
 
+HELP = fr'''
 ---------------------------------------------------------------------------------------------
 
 [*] Usage: python {sys.argv[0]} <Option number> <Question and answer in raw>
@@ -253,6 +263,7 @@ def type4(dir):
 
 if __name__=='__main__':
     start = time.time()
+    print(BANNER)
     file = open('key.txt', 'a', encoding='UTF-8')
     if len(sys.argv) == 3:
         if sys.argv[1] == r'2':
@@ -279,9 +290,9 @@ if __name__=='__main__':
         elif sys.argv[1] == r'4':
             type4(sys.argv[2])
         else:
-            exit('\n[-] Option not found!' + HELP)
+            exit('[-] Option not found!' + HELP)
     else:
-        exit('\n[-] Wrong format.'+HELP)
+        exit(HELP)
     print('-------------------------------------------------------------')
     end = time.time() - start
     time.sleep(0.0000000001)
