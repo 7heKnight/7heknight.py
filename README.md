@@ -5,6 +5,6 @@
   <dt style='font-weight: bold;'>=>Solution:</dt>
     <dd>$ pip install wheel</dd>
   <dt> - Go to <a href='https://www.lfd.uci.edu/~gohlke/pythonlibs/'>this library</a> to get the thing you need</dt>
-    <dd>$ pip install <Downloaded_Wheel_File></dd>
+    <dd>$ pip install file.whl</dd>
   <dt>- You can also get pip (<a href='https://github.com/7heKnight/7heknight.py/blob/main/get-pip.py'>get-pip.py</a>) or visite here to get more information</dt>
 </dl>
