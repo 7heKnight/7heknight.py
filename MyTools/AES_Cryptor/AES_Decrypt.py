@@ -1,7 +1,7 @@
 from Crypto.Random import get_random_bytes
 from Crypto.Util.Padding import *
-from hashlib import md5, sha256
 from Crypto.Cipher import AES
+from hashlib import md5
 from base64 import *
 import sys
 import re
@@ -15,10 +15,6 @@ class AESCipher:
         raw = b64decode(data)
         self.cipher = AES.new(self.key, AES.MODE_CBC, raw[:AES.block_size])
         return unpad(self.cipher.decrypt(raw[AES.block_size:]), AES.block_size)
-
-def hashing(data):
-    sha_hash = sha256(data).hexdigest().encode('UTF-8')
-    return sha_hash
 
 def is_exist_file(file_name):
     try:
