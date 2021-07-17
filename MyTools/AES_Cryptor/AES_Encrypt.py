@@ -1,7 +1,7 @@
 from Crypto.Random import get_random_bytes
 from Crypto.Util.Padding import *
+from hashlib import md5, sha256
 from Crypto.Cipher import AES
-from hashlib import md5, sha1
 from base64 import *
 import sys
 import re
@@ -18,8 +18,9 @@ class AESCipher:
             AES.block_size)))
 
 def hashing(data):
-    sha_hash = sha1(data).hexdigest().encode('UTF-8')
-    return md5(sha_hash).digest()
+    sha_hash = sha256(data).hexdigest().encode('UTF-8')
+    sha_hash = str(sha_hash).replace("b'", '').replace("'", '')
+    return sha_hash
 
 def is_exist_file(file_name):
     try:
@@ -46,7 +47,7 @@ def user_input():
     else:
         sys.exit('[-] Wrong type! Terminated.')
     # USER INPUT SECRET KEY
-    aes_key = input('[*] Enter your security key: ')
+    aes_key = input('[*] Enter security key: ')
     return data, aes_key, file_name, type_of_data
 
 if __name__=='__main__':
@@ -58,8 +59,8 @@ if __name__=='__main__':
     if 'f' in type_of_data:
         f = open(file_name + '.aes', 'w', encoding='UTF-8')
         f.write(str(cipher))
-        print(f'[+]]Encrypted data save in {os.curdir}\\{file_name}.aes')
-        print(f'[+]] Hashed data: {hash_data}')
+        print(f'[+] Encrypted data save in {os.curdir}\\{file_name}.aes')
+        print(f'[+] Hashed data: {hash_data}')
         print(f'[+] Hashed key: {hash_key}')
     elif 's' in type_of_data:
         print(f'[+] Encrypted Data: {cipher}')
