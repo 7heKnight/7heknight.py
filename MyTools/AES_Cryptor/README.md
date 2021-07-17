@@ -1,1 +1,10 @@
-<h1 style='text-align: center;'>AES CRYPTOR <h1>
+<html>
+<head>
+<style>
+h1 {text-align: center;}
+</style>
+</head>
+<body>
+<h1>AES CRYPTOR</h1>
+</body>
+</html> 
