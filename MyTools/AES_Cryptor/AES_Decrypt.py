@@ -32,8 +32,7 @@ def user_input():
         file_name = input('[*] Input file name to decrypt: ')
         if not is_exist_file(file_name):
             sys.exit('[-] Cannot find the file.')
-        data = open(file_name, 'r', encoding='UTF-8').read()
-        data = bytes(data, encoding='UTF-8')
+        data = open(file_name, 'rb').read()
 
     # If String type, will execute this
     elif 's' in type_of_data:
@@ -47,13 +46,15 @@ def user_input():
 if __name__=='__main__':
     data, aes_key, file_name, type_of_data = user_input()
     try:
-        cipher = AESCipher(aes_key).decrypt(data).decode('UTF-8')
+        cipher = AESCipher(aes_key).decrypt(data)
     except:
         sys.exit('[-] Wrong Key! String/File not decrypted')
     print('========== RESULT ==========')
     if 'f' in type_of_data:
-        f = open(file_name + '.txt', 'w', encoding='UTF-8')
-        f.write(str(cipher))
-        print(f'[+]]Encrypted data save in {os.curdir}\\{file_name}.txt')
+        os.remove(file_name)
+        file_name = file_name.replace('.aes', '')
+        f = open(file_name, 'wb')
+        f.write(cipher)
+        print(f'[+] Encrypted data save in {os.getcwd()}\\{file_name}')
     elif 's' in type_of_data:
         print(f'[+] Encrypted Data: {cipher}')
