@@ -4,7 +4,6 @@ from hashlib import md5, sha256
 from Crypto.Cipher import AES
 from base64 import *
 import sys
-import re
 import os
 
 class AESCipher:
@@ -38,8 +37,7 @@ def user_input():
         file_name = input('[*] Input file name to encrypt: ')
         if not is_exist_file(file_name):
             sys.exit('[-] Cannot find the file.')
-        data = open(file_name, 'r', encoding='UTF-8').read()
-        data = bytes(data, encoding='UTF-8')
+        data = open(file_name, 'rb').read()
 
     # If String type, will execute this
     elif 's' in type_of_data:
@@ -52,14 +50,15 @@ def user_input():
 
 if __name__=='__main__':
     data, aes_key, file_name, type_of_data = user_input()
-    cipher = AESCipher(aes_key).encrypt(data).decode('UTF-8')
+    cipher = AESCipher(aes_key).encrypt(data)
     hash_data = hashing(data)
     hash_key = hashing(aes_key.encode('UTF-8'))
     print('========== RESULT ==========')
     if 'f' in type_of_data:
-        f = open(file_name + '.aes', 'w', encoding='UTF-8')
-        f.write(str(cipher))
-        print(f'[+] Encrypted data save in {os.curdir}\\{file_name}.aes')
+        os.remove(file_name)
+        f = open(file_name + '.aes', 'wb')
+        f.write(cipher)
+        print(f'[+] Encrypted data save in {os.getcwd()}\\{file_name}.aes')
         print(f'[+] Hashed data: {hash_data}')
         print(f'[+] Hashed key: {hash_key}')
     elif 's' in type_of_data:
