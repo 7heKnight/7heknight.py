@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<items burpVersion="2021.7" exportTime="Not today">
+  <item>
+    <time>Fri Jul 16 14:45:34 ICT 2021</time>
+    <url><![CDATA[https://www.link.7k/path_items/?id=123]]></url>
+    <host ip="127.0.0.1">www.link.7k</host>
+    <port>443</port>
+    <protocol>https</protocol>
+    <method><![CDATA[GET]]></method>
+    <path><![CDATA[/]]></path>
+    <extension>null</extension>
+    <request base64="true"><![CDATA[123==]]></request>
+    <status>200</status>
+    <responselength>870766</responselength>
+    <mimetype>HTML</mimetype>
+    <response base64="true"><![CDATA[123==]]></response>
+    <comment></comment>
+  </item>
+ 
