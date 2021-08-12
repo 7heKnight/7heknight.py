@@ -54,4 +54,4 @@ if __name__=='__main__':
         else:
             print(f'[+] Encrypted data save in {os.getcwd()}/{file_name}.aes')
     elif 's' in type_of_data:
-        print(f'[+] Encrypted Data: {cipher}')
+        print(f'[+] Encrypted Data: {cipher.decode("UTF-8")}')
