@@ -59,6 +59,6 @@ if __name__=='__main__':
         print(f'[+] Hashed data: {hash_data}')
         print(f'[+] Hashed key: {hash_key}')
     elif 's' in type_of_data:
-        print(f'[+] Encrypted Data: {cipher}')
+        print(f'[+] Encrypted Data: {cipher.decode("UTF-8")}')
         print(f'[+] Hashed data: {hash_data}')
         print(f'[+] Hashed key: {hash_key}')
