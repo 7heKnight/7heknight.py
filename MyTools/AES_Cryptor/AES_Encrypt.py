@@ -21,13 +21,6 @@ def hashing(data):
     sha_hash = str(sha_hash).replace("b'", '').replace("'", '')
     return sha_hash
 
-def is_exist_file(file_name):
-    try:
-        open(file_name, 'r', encoding='UTF-8')
-        return True
-    except:
-        return False
-
 def user_input():
     file_name = ''
     type_of_data = input('[*] Choosing type of data to encrypt f/s (file/string): ').lower()
@@ -35,7 +28,7 @@ def user_input():
     # If File type, will execute this
     if 'f' in type_of_data:
         file_name = input('[*] Input file name to encrypt: ')
-        if not is_exist_file(file_name):
+        if not os.path.isfile(file_name):
             sys.exit('[-] Cannot find the file.')
         data = open(file_name, 'rb').read()
 
