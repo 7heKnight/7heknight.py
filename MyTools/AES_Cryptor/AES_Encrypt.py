@@ -3,6 +3,7 @@ from Crypto.Util.Padding import *
 from hashlib import md5, sha256
 from Crypto.Cipher import AES
 from base64 import *
+import platform
 import sys
 import os
 
@@ -50,8 +51,11 @@ if __name__=='__main__':
     if 'f' in type_of_data:
         os.remove(file_name)
         f = open(file_name + '.aes', 'wb')
-        f.write(cipher)
-        print(f'[+] Encrypted data save in {os.getcwd()}\\{file_name}.aes')
+        f.write(cipher)        
+        if platform.system() == 'Windows':
+            print(f'[+] Encrypted data save in {os.getcwd()}\\{file_name}.aes')
+        else:
+            print(f'[+] Encrypted data save in {os.getcwd()}/{file_name}.aes')
         print(f'[+] Hashed data: {hash_data}')
         print(f'[+] Hashed key: {hash_key}')
     elif 's' in type_of_data:
