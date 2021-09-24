@@ -1,13 +1,16 @@
-from sys import exit
-import os
+from os import walk
 
-ls = r''
-lsdir = r''
-for root, dir, f in os.walk('.'):
-    for i in f:
-        ls+='"'+i+'"     '
-    for i in dir:
-        lsdir += '"'+i + '"     '
-    print('[+] List dir: ' + lsdir)
-    print('[+] List Files: '+ls)
-    exit(0)
+for root, directories, files in walk('.'):
+    if directories != []:
+        print('\n[+] List Directory:')
+        for i in directories:
+            print(i, end='\t')
+            print('\n')
+    if files != []:
+        print('\n[+] List Files:')
+        for i in files:
+            print(i, end='    ')
+    if files == [] and directories == []:
+        print('[-] There is no file or directory here.')
+    print()
+    break
