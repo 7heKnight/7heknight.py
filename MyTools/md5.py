@@ -1,6 +1,6 @@
 from hashlib import md5
 from os.path import isfile
-from sys import argv,exit
+from sys import argv, exit
 
 if __name__=='__main__':
     if len(argv) != 2 or '-h' in argv:
