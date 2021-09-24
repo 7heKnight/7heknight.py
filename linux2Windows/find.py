@@ -1,11 +1,10 @@
-from sys import exit
-import optparse
-import time
-import os
-import re
+from optparse import OptionParser
+from os import walk, path, getcwd
+from re import search, IGNORECASE
+from sys import exit, argv as arguments
 
 def options():
-    parser = optparse.OptionParser('Syntax: Find <-d Directory> <-n File\'s_Name> <-f File\'s_Type>')
+    parser = OptionParser(f'Usage: {arguments[0]} <-d Directory> <-n File\'s_Name> <-f File\'s_Type>')
     parser.add_option('-d', help=r'Directory.')
     parser.add_option('-f', help=r'File type going to find.')
     parser.add_option('-n', help=r'Name of file going to find.')
@@ -17,11 +16,9 @@ def options():
 
 def contentFinder(dir, content):
     with open(dir, 'r') as f:
-        try:
-            re.search(content, f.read(), re.I).group(0)
+        if content.upper() in f.read().upper():
             return True
-        except:
-            return False
+        return False
 
 def find(directory, fileType, fileName, content):
     listResult = []
@@ -30,14 +27,14 @@ def find(directory, fileType, fileName, content):
     if fileType == None:
         fileType = r'.*'
     if directory == None:
-        directory = os.getcwd()
+        directory = getcwd()
     try:
-        for root, dir, file in os.walk(directory, topdown=True):
+        for root, dir, file in walk(directory, topdown=True):
             for name in file:
                 try:
-                    currentWorkingDir = os.path.join(root, name)
+                    currentWorkingDir = path.join(root, name)
                     try:
-                        re.search(fileName + '.*[.]{1}' + fileType + '$', name, re.I).group(0)
+                        search(fileName + '.*[.]{1}' + fileType + '$', name, IGNORECASE).group(0)
                         if content != None:
                             if contentFinder(currentWorkingDir, content):
                                 print(currentWorkingDir)
@@ -47,7 +44,6 @@ def find(directory, fileType, fileName, content):
                             listResult.append(currentWorkingDir)
                     except:
                         pass
-
                 except KeyboardInterrupt:
                     exit('[-] Terminated.')
     except KeyboardInterrupt:
@@ -65,7 +61,6 @@ if __name__=='__main__':
     if not result:
         exit('[-] No result found.')
     print('----------------------------------')
-    time.sleep(0.000000000001)
     exit('[+] Program executed successfully.')
 
 # Created and tested on Windows 10 Professional v20H2
