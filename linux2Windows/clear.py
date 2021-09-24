@@ -1,3 +1,2 @@
-import subprocess
-import os
-os.system(r'cls')
+from os import system
+system(r'cls')
