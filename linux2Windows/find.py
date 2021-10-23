@@ -32,7 +32,7 @@ def content_finder(file, content):
 
 # The main finding function
 def find(directory, file_type, file_name, content):
-    list_result = []
+    counter = 0
     if not file_name:
         file_name = '.*'
     if not file_type:
@@ -55,19 +55,18 @@ def find(directory, file_type, file_name, content):
                     search(file_name + r'.*' + file_type + r'$', current_working_dir, IGNORECASE).group(0)
                     if content:
                         if content_finder(current_working_dir, content):
-                            current_working_dir = sub(file_name, f'\033[93m{file_name}', current_working_dir)
-                            current_working_dir = sub(file_type, f'\033[93m{file_type}\033[0m', current_working_dir)
+                            current_working_dir = current_working_dir.replace(file_name,f'\033[93m{file_name}\033[0m').\
+                                replace(file_type, f'\033[93m{file_type}\033[0m')
                             print(current_working_dir)
-                            list_result.append(current_working_dir)
+                            counter += 1
                     else:
                         print(current_working_dir)
-                        list_result.append(current_working_dir)
+                        counter += 1
                 except:
                     pass
-
     except KeyboardInterrupt:
         exit('[-] Terminated.')
-    return list_result
+    return counter
 
 
 if __name__ == '__main__':
@@ -78,12 +77,12 @@ if __name__ == '__main__':
         print('[*] Searching with none content...\n')
 
     result = find(opt.d, opt.f, opt.n, opt.content)
-    if not result:
+    if result == 0:
+        from sys import exit
         exit('[-] No result found.')
     print('----------------------------------')
     sleep(0.000000000001)
     from sys import exit
-
     exit('[+] Program executed successfully.')
 
 # Created and tested on Windows 10 Professional v20H2
