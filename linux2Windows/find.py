@@ -55,8 +55,6 @@ def find(directory, file_type, file_name, content):
                     search(file_name + r'.*' + file_type + r'$', current_working_dir, IGNORECASE).group(0)
                     if content:
                         if content_finder(current_working_dir, content):
-                            current_working_dir = current_working_dir.replace(file_name,f'\033[93m{file_name}\033[0m').\
-                                replace(file_type, f'\033[93m{file_type}\033[0m')
                             print(current_working_dir)
                             counter += 1
                     else:
@@ -83,7 +81,7 @@ if __name__ == '__main__':
     print('----------------------------------')
     sleep(0.000000000001)
     from sys import exit
-    exit('[+] Program executed successfully.')
+    exit(f'[+] Program executed successfully with {result} results.')
 
 # Created and tested on Windows 10 Professional v20H2
 # Usage: "find -h" to get more information.
