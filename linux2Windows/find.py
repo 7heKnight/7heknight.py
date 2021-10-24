@@ -4,8 +4,7 @@ from os import walk, path, getcwd
 from platform import system
 from time import sleep
 
-
-# Define the options to get the variable.
+# Tested on Windows 11 Enterprise Insider Preview v22xxx.xxxx
 
 
 def options():
@@ -80,11 +79,6 @@ if __name__ == '__main__':
         exit('[-] No result found.')
     print('----------------------------------')
     sleep(0.000000000001)
+    print(f'[+] Program executed successfully with {result} results.')
     from sys import exit
-    exit(f'[+] Program executed successfully with {result} results.')
-
-# Created and tested on Windows 10 Professional v20H2
-# Usage: "find -h" to get more information.
-# E.g: "find -d C:\ -f pdf"
-# Convert to execution file: "pyinstaller -F find.py"
-# Put the execution file into "C:\Windows\System32"
+    exit(0)
