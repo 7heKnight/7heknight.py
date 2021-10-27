@@ -1,7 +1,7 @@
-# E.g: 
-#   [+] Valid URL: https://pastebin.com/N3f0aqsS (200)
-#   [+] Invalid URL: https://pastebin.com/n3f0aqss (404)
-#   [*] Usage: python check-sub-dir_pastebin.py <Invalid URL>
+# [*] Usage: python check-sub-dir_pastebin.py <Invalid URL> 
+#    [-] Example given: 
+#       [+] (200) Valid URL: https://pastebin.com/N3f0aqsS 
+#       [+] (404) Invalid URL: https://pastebin.com/n3f0aqss 
 from itertools import product
 from sys import exit, argv
 from re import search
