@@ -1,5 +1,5 @@
 # 7heknight.py
-<p style='font-weight: bold;'>I build with my inspiration</p>
+<p style='font-weight: bold;'>This is not a public repository, so I will not write a clear README</p>
 <dl>
   <dt>- For helping who has downloaded and importted library fails with pip install</dt>
   <dt style='font-weight: bold;'>=>Solution:</dt>
