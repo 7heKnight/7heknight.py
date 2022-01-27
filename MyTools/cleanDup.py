@@ -9,58 +9,61 @@ import time
 import sys
 import os
 
-def openAndCheckDir(dir):
-    listHash = []
-    count = 0
-    countScan = 0
+
+def check_directory(directories):
+    hash_list = []
+    counter = 0
+    scanned_counter = 0
     log = open(sys.argv[0] + '.log', 'a+', encoding='UTF-8')
-    for root, dirs, files in os.walk(dir, topdown=True):
-        isScanning = False
+    for root, dirs, files in os.walk(directories, topdown=True):
+        is_scanned = False
         for name in files:
             try:
-                if isScanning == False:
-                    isScanning = True
-                    print('\n[+] Scanning the directory: ' + root +'\n')
+                if not is_scanned:
+                    is_scanned = True
+                    print(f'\n[+] Scanning the directory: {root}\n')
                 f = os.path.join(root, name)
                 ff = open(f, 'rb')
-                h = hashMake(ff.read())
+                h = make_hash(ff.read())
                 ff.close()
-                countScan += 1
+                scanned_counter += 1
                 if not os.path.isdir(f):
-                    if h not in listHash:
-                        listHash.append(h)
+                    if h not in hash_list:
+                        hash_list.append(h)
                     else:
-                        count += 1
-                        log.write('\n'+str(count)+'. ' + root + '\\' + name)
+                        counter += 1
+                        log.write('\n'+str(counter)+'. ' + root + '\\' + name)
                         print('[-] Removed ' + root + '\\' + name)
                         os.remove(f)
             except KeyboardInterrupt:
-                countScan += 1
+                scanned_counter += 1
                 print('[!] Could not scan the file: ' + root + '\\' + name)
     log.write('\n')
     log.close()
-    return count, countScan
+    return counter, scanned_counter
 
-def hashMake(Files):
-    return hashlib.sha1(Files).hexdigest()
 
-if __name__=='__main__':
+def make_hash(files):
+    return hashlib.sha1(files).hexdigest()
+
+
+if __name__ == '__main__':
     first = time.time()
-    dir = sys.argv[1]
-    if os.path.isdir(dir):
-        count, cS = openAndCheckDir(dir)
+    directory = sys.argv[1]
+    if os.path.isdir(directory):
+        count, cS = check_directory(directory)
         print('\n[+] Scanned ' + str(cS) + ' files')
         if count == 0:
             print('\n[*] No files duplicated')
-            print('\n[-] Teminate')
+            print('\n[-] Terminate')
             exit('The program processed in ' + str(time.time() - first) + ' sec')
         else:
             print('\n[-] Removed ' + str(count) + ' duplicated files')
-            print('[-] Teminate')
+            print('[-] Terminate')
             exit('The program processed in ' + str(time.time() - first) + ' sec')
-    elif os.path.isfile(dir):
+    elif os.path.isfile(directory):
         print('\nUsage: ' + sys.argv[0] + ' <Directory>')
-        print('\n[-] Teminated. Application can not scan the path')
+        print('\n[-] Terminated. Application can not scan the path')
         exit('The program processed in ' + str(time.time() - first) + ' sec')
     else:
         print('\nUsage: ' + sys.argv[0] + ' <Directory>')
