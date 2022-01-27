@@ -48,6 +48,7 @@ def make_hash(files):
 
 
 if __name__ == '__main__':
+    from sys import exit
     first = time.time()
     directory = sys.argv[1]
     if os.path.isdir(directory):
