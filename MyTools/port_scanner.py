@@ -29,7 +29,6 @@ def __get_port_list(port_arguments) -> list:
                 final_list.append(str(port + 1))
         else:
             final_list.append(p)
-    final_list.sort(reverse=True)
     final_list = list(dict.fromkeys(final_list))
     return final_list
 
@@ -56,11 +55,8 @@ def __port_scan(result_list, target, target_port: int):
     try:
         conn_socket.connect((target, target_port))
         conn_socket.send(b'Banner query\r\n')
-        receive = conn_socket.recv(800)
-        r = re.search(r'Apache.+? |SSH.+? ', receive.decode('UTF8'))
-        if r:
-            receive = r.group(0)
-        result_list.append(f'   [+] {target_port}/TCP open: {receive}')
+        result_list.append(f'   [+] TCP/{target_port} open.')
+        print(f'   [+] TCP/{target_port} open.')
     except OSError:
         pass
     finally:
@@ -84,8 +80,8 @@ if __name__ == '__main__':
             __multi_scan(result, host, int(port))
         except KeyboardInterrupt:
             exit('[-] Keyboard Interruption: Terminated!')
-    for i in result:
-        print(i)
+    # for i in result:
+    #     print(i)
     print('----------------------------------\n'
           'Program executed successfully')
     exit(0)
