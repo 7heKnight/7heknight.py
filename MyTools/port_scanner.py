@@ -68,7 +68,7 @@ def __port_scan(result_list, target, target_port: int):
 def __multi_scan(result_list, target_host, target_port: int):
     t = threading.Thread(target=__port_scan, args=(result_list, target_host, target_port))
     t.start()
-    t.join(3)
+    t.join(0.01)
 
 
 if __name__ == '__main__':
