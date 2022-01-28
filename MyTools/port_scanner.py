@@ -26,9 +26,10 @@ def __get_port_list(port_arguments) -> list:
         if '-' in p:
             get_range = p.split('-')
             for port in range(int(get_range[0]), int(get_range[1])):
-                final_list.append(str(port))
+                final_list.append(str(port + 1))
         else:
             final_list.append(p)
+    final_list.sort(reverse=True)
     final_list = list(dict.fromkeys(final_list))
     return final_list
 
@@ -36,7 +37,6 @@ def __get_port_list(port_arguments) -> list:
 def __get_ip_from_hostname(hostname):
     try:
         ip_address = socket.gethostbyname(hostname)
-        print(ip_address)
         return ip_address
     except OSError:
         exit(f'[-] Cannot resolve {hostname}: Unknown host!')
@@ -56,8 +56,10 @@ def __port_scan(result_list, target, target_port: int):
     try:
         conn_socket.connect((target, target_port))
         conn_socket.send(b'Banner query\r\n')
-        receive = conn_socket.recv(800).decode('UTF8')
-        receive = re.search(r'Apache.+? |SSH.+? ', receive).group(0)
+        receive = conn_socket.recv(800)
+        r = re.search(r'Apache.+? |SSH.+? ', receive.decode('UTF8'))
+        if r:
+            receive = r.group(0)
         result_list.append(f'   [+] {target_port}/TCP open: {receive}')
     except OSError:
         pass
@@ -74,6 +76,7 @@ def __multi_scan(result_list, target_host, target_port: int):
 if __name__ == '__main__':
     result = []
     host, list_ports = __option_parser()
+    host = __get_ip_from_hostname(host)
     ports = __get_port_list(list_ports)
     print(f'[*] Scan result for {host}:')
     for port in ports:
