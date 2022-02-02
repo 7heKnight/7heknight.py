@@ -13,9 +13,9 @@ if __name__ == '__main__':
             spawn = int(int(sys.argv[1])/len(characters_raw))
             if len(characters_raw) * spawn - int(sys.argv[1]) < 0:
                 spawn += 1
-            characters = ''.join(characters+characters_raw for i in range(0,int(spawn)))
+            characters = ''.join(characters+characters_raw for i in range(0, int(spawn)))
         password_length = int(sys.argv[1])
         password = "".join(random.sample(characters, password_length))
-        print(f"Gernerated password: {password}")
-    except:
-        sys.exit('[-] Interger only')
+        print(f"Generated password: {password}")
+    except ValueError:
+        sys.exit('[-] Integer only')
