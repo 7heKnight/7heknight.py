@@ -14,7 +14,6 @@ def check_directory(directories):
     hash_list = []
     counter = 0
     scanned_counter = 0
-    log = open(sys.argv[0] + '.log', 'a+', encoding='UTF-8')
     for root, dirs, files in os.walk(directories, topdown=True):
         is_scanned = False
         for name in files:
@@ -32,14 +31,11 @@ def check_directory(directories):
                         hash_list.append(h)
                     else:
                         counter += 1
-                        log.write('\n'+str(counter)+'. ' + root + '\\' + name)
                         print('[-] Removed ' + root + '\\' + name)
                         os.remove(f)
             except KeyboardInterrupt:
                 scanned_counter += 1
                 print('[!] Could not scan the file: ' + root + '\\' + name)
-    log.write('\n')
-    log.close()
     return counter, scanned_counter
 
 
@@ -70,3 +66,4 @@ if __name__ == '__main__':
         print('\nUsage: ' + sys.argv[0] + ' <Directory>')
         print('\n[-] Directory not found. Terminated')
         exit('The program processed in ' + str(time.time() - first) + ' sec')
+        
