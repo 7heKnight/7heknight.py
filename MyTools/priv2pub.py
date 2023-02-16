@@ -4,6 +4,10 @@ from sys import argv, exit
 import subprocess
 
 if __name__ == '__main__':
+    """
+    Requires OpenSSL:
+    - https://wiki.openssl.org/index.php/Binaries
+    """
     if len(argv) != 2:
         print("Public Key Required!")
         exit(-1)
