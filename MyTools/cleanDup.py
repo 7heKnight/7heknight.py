@@ -1,150 +1,85 @@
-"""
-Duplicate file cleaner — scans a directory tree, hashes every file, and
-removes duplicates (keeping the first occurrence). Produces a log file
-in the target directory.
-
-Usage:
-    python cleanDup.py <directory> [--dry-run] [--log-file <path>]
-
-Flags:
-    --dry-run    List duplicates without deleting them.
-    --log-file   Custom path for the log file (default: <directory>/cleanup.log).
-"""
-
-import argparse
-import hashlib
-import logging
-import os
-import sys
-import time
-
-CHUNK_SIZE = 8192  # bytes read per iteration when hashing
-
-
-def make_hash(filepath, algorithm="sha256"):
-    """Return the hex-digest hash of *filepath*, reading in chunks."""
-    hasher = hashlib.new(algorithm)
-    with open(filepath, "rb") as fh:
+# -*- coding: utf-8 -*-
+(lambda _:(lambda __:__(_,__))(lambda _,__:None))(0x0)
+import argparse as _m0,hashlib as _m1,logging as _m2,os as _m3,sys as _m4,time as _m5
+from base64 import b64decode as _xd
+_=lambda _b:_xd(_b).decode()
+_k3=type(chr(95)+chr(107)+chr(51),(),{chr(95)*2+chr(118):lambda _s:setattr(_s,chr(95)+chr(122),0x0),chr(95)*2+chr(98)+chr(111)+chr(111)+chr(108)+chr(95)*2:lambda _s:False})
+_T=[_(s)for s in[b"c2hhMjU2",b"U2Nhbm5pbmcgZGlyZWN0b3J5OiAlcw==",
+b"U2tpcHBpbmcgc3ltbGluazogJXM=",b"Q291bGQgbm90IHJlYWQgZmlsZTogJXMgKCVzKQ==",
+b"W0RSWS1SVU5dIFdvdWxkIHJlbW92ZSBkdXBsaWNhdGU6ICVz",
+b"UmVtb3ZlZCBkdXBsaWNhdGU6ICVz",b"Q291bGQgbm90IHJlbW92ZSBmaWxlOiAlcyAoJXMp",
+b"RmluZCBhbmQgcmVtb3ZlIGR1cGxpY2F0ZSBmaWxlcyBpbiBhIGRpcmVjdG9yeSB0cmVlLg==",
+b"ZGlyZWN0b3J5",b"Um9vdCBkaXJlY3RvcnkgdG8gc2NhbiBmb3IgZHVwbGljYXRlcy4=",
+b"LS1kcnktcnVu",b"UmVwb3J0IGR1cGxpY2F0ZXMgd2l0aG91dCBkZWxldGluZyB0aGVtLg==",
+b"LS1sb2ctZmlsZQ==",
+b"UGF0aCBmb3IgdGhlIGxvZyBmaWxlIChkZWZhdWx0OiA8ZGlyZWN0b3J5Pi9jbGVhbnVwLmxvZyku",
+b"JShhc2N0aW1lKXMgICUobGV2ZWxuYW1lKS04cyAgJShtZXNzYWdlKXM=",
+b"Tm90IGEgdmFsaWQgZGlyZWN0b3J5OiA=",b"Y2xlYW51cC5sb2c=",
+b"U3RhcnRpbmcgc2NhbjogJXMgKGRyeV9ydW49JXMp",
+b"U2Nhbm5lZCAlZCBmaWxlcyBpbiAlLjJmIHNlYw==",
+b"RW5jb3VudGVyZWQgJWQgZXJyb3Iocyk=",b"Tm8gZHVwbGljYXRlIGZpbGVzIGZvdW5kLg==",
+b"V291bGQgcmVtb3Zl",b"UmVtb3ZlZA==",b"JXMgJWQgZHVwbGljYXRlIGZpbGUocyku",
+b"dXRmLTg="]]
+_C=0x1<<0xD
+_nop=lambda *_a,**_kw:(None,setattr(_k3,'_z',0x1)if 0 else None)[0]
+def _0xA3(_p,_g=None):
+    _g=_g if _g is not None else _T[0];_h=_m1.new(_g)
+    with open(_p,chr(0x72)+chr(0x62))as _f:
         while True:
-            chunk = fh.read(CHUNK_SIZE)
-            if not chunk:
-                break
-            hasher.update(chunk)
-    return hasher.hexdigest()
-
-
-def scan_directory(directory, dry_run=False):
-    """Walk *directory*, remove (or report) duplicate files.
-
-    Returns (removed_count, scanned_count, errors_count).
-    """
-    seen_hashes = set()
-    removed = 0
-    scanned = 0
-    errors = 0
-
-    for root, _dirs, files in os.walk(directory, topdown=True):
-        if files:
-            logging.info("Scanning directory: %s", root)
-
-        for name in files:
-            filepath = os.path.join(root, name)
-
-            # Skip symlinks to avoid unintended deletions
-            if os.path.islink(filepath):
-                logging.debug("Skipping symlink: %s", filepath)
-                continue
-
+            _c=_f.read(_C)
+            if not _c:break
+            _h.update(_c)
+    return _h.hexdigest()
+def _0xB7(_d,_dr=False):
+    _se,_r,_sc,_e=set(),0x0,0x0,0x0
+    for _rt,_di,_fs in _m3.walk(_d,topdown=True):
+        _fs and _m2.info(_T[1],_rt)
+        for _n in _fs:
+            _fp=_m3.path.join(_rt,_n)
+            if _m3.path.islink(_fp):
+                _m2.debug(_T[2],_fp);continue
             try:
-                file_hash = make_hash(filepath)
-                scanned += 1
-            except OSError as exc:
-                errors += 1
-                logging.warning("Could not read file: %s (%s)", filepath, exc)
-                continue
-
-            if file_hash not in seen_hashes:
-                seen_hashes.add(file_hash)
+                _fh=_0xA3(_fp);_sc+=0x1
+            except OSError as _x:
+                _e+=0x1;_m2.warning(_T[3],_fp,_x);continue
+            if _fh not in _se:
+                _se.add(_fh)
             else:
-                if dry_run:
-                    logging.info("[DRY-RUN] Would remove duplicate: %s", filepath)
+                if _dr:
+                    _m2.info(_T[4],_fp)
                 else:
                     try:
-                        os.remove(filepath)
-                        logging.info("Removed duplicate: %s", filepath)
-                    except OSError as exc:
-                        errors += 1
-                        logging.warning("Could not remove file: %s (%s)", filepath, exc)
-                        continue
-                removed += 1
-
-    return removed, scanned, errors
-
-
-def _build_parser():
-    """Build and return the argument parser."""
-    parser = argparse.ArgumentParser(
-        description="Find and remove duplicate files in a directory tree.",
-    )
-    parser.add_argument(
-        "directory",
-        help="Root directory to scan for duplicates.",
-    )
-    parser.add_argument(
-        "--dry-run",
-        action="store_true",
-        default=False,
-        help="Report duplicates without deleting them.",
-    )
-    parser.add_argument(
-        "--log-file",
-        default=None,
-        help="Path for the log file (default: <directory>/cleanup.log).",
-    )
-    return parser
-
-
-def _configure_logging(log_path):
-    """Set up logging to both console and *log_path*."""
-    fmt = "%(asctime)s  %(levelname)-8s  %(message)s"
-    handlers = [
-        logging.StreamHandler(sys.stdout),
-        logging.FileHandler(log_path, encoding="utf-8"),
-    ]
-    logging.basicConfig(level=logging.INFO, format=fmt, handlers=handlers)
-
-
-def main(args=None):
-    """Entry point for the duplicate-file cleaner."""
-    parser = _build_parser()
-    opts = parser.parse_args(args)
-
-    directory = os.path.abspath(opts.directory)
-    if not os.path.isdir(directory):
-        parser.error(f"Not a valid directory: {directory}")
-
-    log_path = opts.log_file or os.path.join(directory, "cleanup.log")
-    _configure_logging(log_path)
-
-    logging.info("Starting scan: %s (dry_run=%s)", directory, opts.dry_run)
-    start = time.time()
-
-    removed, scanned, errors = scan_directory(directory, dry_run=opts.dry_run)
-
-    elapsed = time.time() - start
-    logging.info("Scanned %d files in %.2f sec", scanned, elapsed)
-    if errors:
-        logging.info("Encountered %d error(s)", errors)
-    if removed == 0:
-        logging.info("No duplicate files found.")
-    else:
-        action = "Would remove" if opts.dry_run else "Removed"
-        logging.info("%s %d duplicate file(s).", action, removed)
-
-    return 0
-
-
-if __name__ == "__main__":
-    sys.exit(main())
-        
-
+                        _m3.remove(_fp);_m2.info(_T[5],_fp)
+                    except OSError as _x:
+                        _e+=0x1;_m2.warning(_T[6],_fp,_x);continue
+                _r+=0x1
+    return(_r,_sc,_e)
+def _0xC1():
+    _p=_m0.ArgumentParser(description=_T[7])
+    _p.add_argument(_T[8],help=_T[9])
+    _p.add_argument(_T[10],action=(lambda:chr(0x73)+chr(0x74)+chr(0x6f)+chr(0x72)+chr(0x65)+chr(0x5f)+chr(0x74)+chr(0x72)+chr(0x75)+chr(0x65))(),default=not True,help=_T[11])
+    _p.add_argument(_T[12],default=None,help=_T[13])
+    return _p
+def _0xD4(_lp):
+    _fmt=_T[14]
+    _hs=[_m2.StreamHandler(_m4.stdout),_m2.FileHandler(_lp,encoding=_T[24])]
+    _m2.basicConfig(level=_m2.INFO,format=_fmt,handlers=_hs)
+def _0xE9(_ar=None):
+    _pa=_0xC1();_op=_pa.parse_args(_ar)
+    _di=_m3.path.abspath(getattr(_op,_T[8]))
+    if not(_m3.path.isdir(_di)):_pa.error(_T[15]+_di)
+    _lp=getattr(_op,chr(0x6c)+chr(0x6f)+chr(0x67)+chr(0x5f)+chr(0x66)+chr(0x69)+chr(0x6c)+chr(0x65))or _m3.path.join(_di,_T[16])
+    _0xD4(_lp);_nop()if(0x0&0xFF)else None
+    _dr=getattr(_op,chr(100)+chr(114)+chr(121)+chr(95)+chr(114)+chr(117)+chr(110))
+    _m2.info(_T[17],_di,_dr);_st=_m5.time()
+    _rv,_sn,_er=_0xB7(_di,_dr=_dr)
+    _el=_m5.time()-_st;_m2.info(_T[18],_sn,_el)
+    _er and _m2.info(_T[19],_er)
+    (_m2.info(_T[20])if _rv==0x0 else(_m2.info(_T[23],(_T[21]if _dr else _T[22]),_rv)))
+    return 0x0
+def make_hash(_fp,algorithm=None):return _0xA3(_fp,_g=algorithm)
+def scan_directory(_d,dry_run=False):return _0xB7(_d,_dr=dry_run)
+main=_0xE9
+if __name__==chr(0x5f)*2+chr(0x6d)+chr(0x61)+chr(0x69)+chr(0x6e)+chr(0x5f)*2:
+ try:_m4.exit(_0xE9())
+ except KeyboardInterrupt:_m2.info(chr(0x53)+chr(0x63)+chr(0x61)+chr(0x6e)+chr(0x20)+chr(0x69)+chr(0x6e)+chr(0x74)+chr(0x65)+chr(0x72)+chr(0x72)+chr(0x75)+chr(0x70)+chr(0x74)+chr(0x65)+chr(0x64)+chr(0x2e));_m4.exit(0x82)
