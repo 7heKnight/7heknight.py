@@ -1,11 +1,14 @@
 #!/usr/bin/env python3
 """Cross-platform MAC address changer.
 
-Supports Linux, macOS, and Windows. Requires elevated privileges
-(root/sudo on Unix, Administrator on Windows).
+Supports Linux, macOS, and Windows. Automatically requests elevated
+privileges (root/sudo on Unix, Administrator via UAC on Windows)
+when not already running with sufficient permissions.
 """
 
 import argparse
+import ctypes
+import os
 import platform
 import re
 import shutil
@@ -18,6 +21,65 @@ MAC_EXTRACT = re.compile(
     r"[0-9A-Fa-f]{2}(?:[:\-])[0-9A-Fa-f]{2}(?:[:\-])[0-9A-Fa-f]{2}"
     r"(?:[:\-])[0-9A-Fa-f]{2}(?:[:\-])[0-9A-Fa-f]{2}(?:[:\-])[0-9A-Fa-f]{2}"
 )
+
+
+# ---------------------------------------------------------------------------
+# Privilege elevation
+# ---------------------------------------------------------------------------
+
+def is_elevated():
+    """Return True if the process has administrator/root privileges."""
+    if platform.system() == "Windows":
+        try:
+            return bool(ctypes.windll.shell32.IsUserAnAdmin())
+        except (AttributeError, OSError):
+            return False
+    else:
+        return os.geteuid() == 0
+
+
+def _elevate_windows():
+    """Re-launch the current script with a UAC elevation prompt."""
+    params = " ".join(f'"{a}"' if " " in a else a for a in sys.argv)
+    try:
+        ret = ctypes.windll.shell32.ShellExecuteW(
+            None, "runas", sys.executable, params, None, 1  # SW_SHOWNORMAL
+        )
+        # ShellExecuteW returns >32 on success, <=32 on failure
+        if ret <= 32:
+            print("[-] UAC elevation was declined or failed.")
+            sys.exit(1)
+    except (AttributeError, OSError) as exc:
+        print(f"[-] Failed to request elevation: {exc}")
+        sys.exit(1)
+    # The elevated process runs separately; this (unelevated) process exits.
+    sys.exit(0)
+
+
+def _elevate_unix():
+    """Re-exec the current script under *sudo*."""
+    sudo = shutil.which("sudo")
+    if sudo is None:
+        print("[-] 'sudo' not found. Please run this script as root.")
+        sys.exit(1)
+    print("[+] Requesting root privileges via sudo...")
+    try:
+        os.execvp(sudo, [sudo, sys.executable] + sys.argv)
+    except OSError as exc:
+        print(f"[-] Failed to re-exec with sudo: {exc}")
+        sys.exit(1)
+
+
+def ensure_elevated():
+    """If not already elevated, re-launch with the appropriate mechanism."""
+    if is_elevated():
+        return
+    print("[!] This script requires elevated privileges.")
+    if platform.system() == "Windows":
+        print("[+] Requesting Administrator privileges via UAC...")
+        _elevate_windows()
+    else:
+        _elevate_unix()
 
 
 # ---------------------------------------------------------------------------
@@ -39,6 +101,12 @@ def parse_args(argv=None):
         required=True,
         dest="new_mac",
         help="New MAC address (format: XX:XX:XX:XX:XX:XX or XX-XX-XX-XX-XX-XX).",
+    )
+    parser.add_argument(
+        "--no-elevate",
+        action="store_true",
+        default=False,
+        help="Skip automatic privilege elevation (useful for testing/CI).",
     )
     return parser.parse_args(argv)
 
@@ -344,6 +412,10 @@ def main(argv=None):
     """Parse arguments, validate, and change the MAC address."""
     args = parse_args(argv)
     new_mac = validate_mac(args.new_mac)
+
+    # Request elevation before any privileged operations
+    if not args.no_elevate:
+        ensure_elevated()
 
     print(f"[+] Operating system: {_OS}")
     print(f"[+] Target interface: {args.interface}")
