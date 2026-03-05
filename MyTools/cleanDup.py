@@ -1,69 +1,149 @@
-# The Code will hash the data of file and put it into an array, and them compare with others file, if exist, it will remove that file. It will make a file(.log) in the
-# same folder
-# Not recommended using it in root directory
-# Maked and tested on Windows 10 pro 20H2 | Python Version: 3.9.0
-# How To Use: python sys.argv[0] <Directory>. E.g: python cleanDup.py C:\Users\User_name\Desktop
+"""
+Duplicate file cleaner — scans a directory tree, hashes every file, and
+removes duplicates (keeping the first occurrence). Produces a log file
+in the target directory.
 
+Usage:
+    python 123.py <directory> [--dry-run] [--log-file <path>]
+
+Flags:
+    --dry-run    List duplicates without deleting them.
+    --log-file   Custom path for the log file (default: <directory>/cleanup.log).
+"""
+
+import argparse
 import hashlib
-import time
-import sys
+import logging
 import os
+import sys
+import time
+
+CHUNK_SIZE = 8192  # bytes read per iteration when hashing
 
 
-def check_directory(directories):
-    hash_list = []
-    counter = 0
-    scanned_counter = 0
-    for root, dirs, files in os.walk(directories, topdown=True):
-        is_scanned = False
+def make_hash(filepath, algorithm="sha256"):
+    """Return the hex-digest hash of *filepath*, reading in chunks."""
+    hasher = hashlib.new(algorithm)
+    with open(filepath, "rb") as fh:
+        while True:
+            chunk = fh.read(CHUNK_SIZE)
+            if not chunk:
+                break
+            hasher.update(chunk)
+    return hasher.hexdigest()
+
+
+def scan_directory(directory, dry_run=False):
+    """Walk *directory*, remove (or report) duplicate files.
+
+    Returns (removed_count, scanned_count, errors_count).
+    """
+    seen_hashes = set()
+    removed = 0
+    scanned = 0
+    errors = 0
+
+    for root, _dirs, files in os.walk(directory, topdown=True):
+        if files:
+            logging.info("Scanning directory: %s", root)
+
         for name in files:
+            filepath = os.path.join(root, name)
+
+            # Skip symlinks to avoid unintended deletions
+            if os.path.islink(filepath):
+                logging.debug("Skipping symlink: %s", filepath)
+                continue
+
             try:
-                if not is_scanned:
-                    is_scanned = True
-                    print(f'\n[+] Scanning the directory: {root}\n')
-                f = os.path.join(root, name)
-                ff = open(f, 'rb')
-                h = make_hash(ff.read())
-                ff.close()
-                scanned_counter += 1
-                if not os.path.isdir(f):
-                    if h not in hash_list:
-                        hash_list.append(h)
-                    else:
-                        counter += 1
-                        print('[-] Removed ' + root + '\\' + name)
-                        os.remove(f)
-            except KeyboardInterrupt:
-                scanned_counter += 1
-                print('[!] Could not scan the file: ' + root + '\\' + name)
-    return counter, scanned_counter
+                file_hash = make_hash(filepath)
+                scanned += 1
+            except OSError as exc:
+                errors += 1
+                logging.warning("Could not read file: %s (%s)", filepath, exc)
+                continue
+
+            if file_hash not in seen_hashes:
+                seen_hashes.add(file_hash)
+            else:
+                if dry_run:
+                    logging.info("[DRY-RUN] Would remove duplicate: %s", filepath)
+                else:
+                    try:
+                        os.remove(filepath)
+                        logging.info("Removed duplicate: %s", filepath)
+                    except OSError as exc:
+                        errors += 1
+                        logging.warning("Could not remove file: %s (%s)", filepath, exc)
+                        continue
+                removed += 1
+
+    return removed, scanned, errors
 
 
-def make_hash(files):
-    return hashlib.sha1(files).hexdigest()
+def _build_parser():
+    """Build and return the argument parser."""
+    parser = argparse.ArgumentParser(
+        description="Find and remove duplicate files in a directory tree.",
+    )
+    parser.add_argument(
+        "directory",
+        help="Root directory to scan for duplicates.",
+    )
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        default=False,
+        help="Report duplicates without deleting them.",
+    )
+    parser.add_argument(
+        "--log-file",
+        default=None,
+        help="Path for the log file (default: <directory>/cleanup.log).",
+    )
+    return parser
 
 
-if __name__ == '__main__':
-    from sys import exit
-    first = time.time()
-    directory = sys.argv[1]
-    if os.path.isdir(directory):
-        count, cS = check_directory(directory)
-        print('\n[+] Scanned ' + str(cS) + ' files')
-        if count == 0:
-            print('\n[*] No files duplicated')
-            print('\n[-] Terminate')
-            exit('The program processed in ' + str(time.time() - first) + ' sec')
-        else:
-            print('\n[-] Removed ' + str(count) + ' duplicated files')
-            print('[-] Terminate')
-            exit('The program processed in ' + str(time.time() - first) + ' sec')
-    elif os.path.isfile(directory):
-        print('\nUsage: ' + sys.argv[0] + ' <Directory>')
-        print('\n[-] Terminated. Application can not scan the path')
-        exit('The program processed in ' + str(time.time() - first) + ' sec')
+def _configure_logging(log_path):
+    """Set up logging to both console and *log_path*."""
+    fmt = "%(asctime)s  %(levelname)-8s  %(message)s"
+    handlers = [
+        logging.StreamHandler(sys.stdout),
+        logging.FileHandler(log_path, encoding="utf-8"),
+    ]
+    logging.basicConfig(level=logging.INFO, format=fmt, handlers=handlers)
+
+
+def main(args=None):
+    """Entry point for the duplicate-file cleaner."""
+    parser = _build_parser()
+    opts = parser.parse_args(args)
+
+    directory = os.path.abspath(opts.directory)
+    if not os.path.isdir(directory):
+        parser.error(f"Not a valid directory: {directory}")
+
+    log_path = opts.log_file or os.path.join(directory, "cleanup.log")
+    _configure_logging(log_path)
+
+    logging.info("Starting scan: %s (dry_run=%s)", directory, opts.dry_run)
+    start = time.time()
+
+    removed, scanned, errors = scan_directory(directory, dry_run=opts.dry_run)
+
+    elapsed = time.time() - start
+    logging.info("Scanned %d files in %.2f sec", scanned, elapsed)
+    if errors:
+        logging.info("Encountered %d error(s)", errors)
+    if removed == 0:
+        logging.info("No duplicate files found.")
     else:
-        print('\nUsage: ' + sys.argv[0] + ' <Directory>')
-        print('\n[-] Directory not found. Terminated')
-        exit('The program processed in ' + str(time.time() - first) + ' sec')
+        action = "Would remove" if opts.dry_run else "Removed"
+        logging.info("%s %d duplicate file(s).", action, removed)
+
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
         
