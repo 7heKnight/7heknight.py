@@ -4,7 +4,7 @@ removes duplicates (keeping the first occurrence). Produces a log file
 in the target directory.
 
 Usage:
-    python 123.py <directory> [--dry-run] [--log-file <path>]
+    python cleanDup.py <directory> [--dry-run] [--log-file <path>]
 
 Flags:
     --dry-run    List duplicates without deleting them.
@@ -147,3 +147,4 @@ def main(args=None):
 if __name__ == "__main__":
     sys.exit(main())
         
+
