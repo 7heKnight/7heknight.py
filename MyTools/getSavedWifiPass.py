@@ -1,7 +1,7 @@
 """WiFi password extractor for Windows.
 
 Uses `netsh wlan` to retrieve stored WiFi profile names and their passwords.
-Requires administrator privileges and a Windows operating system.
+Auto-elevates via UAC when needed; falls back gracefully without admin.
 """
 
 import ctypes
@@ -30,6 +30,21 @@ def is_admin():
 def is_windows():
     """Return True if running on a Windows platform."""
     return sys.platform.startswith("win")
+
+
+def re_elevate():
+    """Re-launch the current script with administrator privileges via UAC."""
+    try:
+        params = " ".join(f'"{a}"' for a in sys.argv)
+        # ShellExecuteW returns an HINSTANCE > 32 on success
+        ret = ctypes.windll.shell32.ShellExecuteW(
+            None, "runas", sys.executable, params, None, 1
+        )
+        if ret > 32:
+            return True  # elevated process launched
+        return False
+    except Exception:
+        return False
 
 
 def load_saved_passwords(filepath=PASSWORD_LOG_FILE):
@@ -94,24 +109,32 @@ def show_all_profiles(output_json=False):
         return
 
     results = []
+    missing_count = 0
     for name in profiles:
         password = get_password(name)
         if password is not None:
             results.append({"interface": name, "password": password})
+        else:
+            missing_count += 1
 
     if output_json:
         print(json.dumps(results, indent=2, ensure_ascii=False))
     else:
         if not results:
             print("[-] No passwords could be retrieved.")
-            return
-        print("\n--- Result ---\n")
-        for entry in results:
-            print(f"Interface: {entry['interface']}")
-            print(f"Password:  {entry['password']}")
-            print()
+        else:
+            print("\n--- Result ---\n")
+            for entry in results:
+                print(f"Interface: {entry['interface']}")
+                print(f"Password:  {entry['password']}")
+                print()
+        if missing_count:
+            print(f"[!] {missing_count} profile(s) had no retrievable password.")
+            if not is_admin():
+                print("    (Run as Administrator to retrieve all passwords.)")
 
     save_new_passwords([r["password"] for r in results])
+    return missing_count
 
 
 def show_single_profile(profile_name, output_json=False):
@@ -147,15 +170,20 @@ def print_help():
         f"  python {script} <profile_name>      Show password for a specific profile\n"
         f"  python {script} --json              Show all profiles in JSON format\n"
         f"  python {script} <profile> --json    Show one profile in JSON format\n"
+        f"  python {script} --no-elevate        Skip auto-elevation if not admin\n"
         f"  python {script} -h | --help         Show this help message\n"
+        f"\nThe script auto-elevates via UAC if admin rights are needed.\n"
+        f"Use --no-elevate to suppress the UAC prompt and show only\n"
+        f"what is available at the current privilege level.\n"
     )
 
 
 def parse_args(argv):
-    """Parse command-line arguments and return (profile_name, json_flag, help_flag)."""
+    """Parse command-line arguments and return (profile, json, help, no_elevate)."""
     args = argv[1:]
     help_flag = False
     json_flag = False
+    no_elevate = False
     profile_name = None
 
     for arg in args:
@@ -163,6 +191,8 @@ def parse_args(argv):
             help_flag = True
         elif arg == "--json":
             json_flag = True
+        elif arg == "--no-elevate":
+            no_elevate = True
         elif profile_name is None:
             profile_name = arg
         else:
@@ -171,7 +201,7 @@ def parse_args(argv):
                 f'    If the profile name contains spaces, wrap it in quotes.'
             )
 
-    return profile_name, json_flag, help_flag
+    return profile_name, json_flag, help_flag, no_elevate
 
 
 def main():
@@ -179,14 +209,22 @@ def main():
     if not is_windows():
         sys.exit("[-] This tool requires Windows (uses netsh).")
 
-    if not is_admin():
-        sys.exit("[-] Access denied. Run this script as Administrator.")
-
-    profile_name, json_flag, help_flag = parse_args(sys.argv)
+    profile_name, json_flag, help_flag, no_elevate = parse_args(sys.argv)
 
     if help_flag:
         print_help()
         return
+
+    admin = is_admin()
+    if not admin and not no_elevate:
+        print("[*] Not running as Administrator. Attempting auto-elevation...")
+        if re_elevate():
+            print("[+] Elevated process launched. Check the new window.")
+            return
+        print("[!] UAC elevation declined or failed. Continuing with limited access.")
+
+    if not admin:
+        print("[!] Running without admin — passwords may not be visible.\n")
 
     if profile_name:
         show_single_profile(profile_name, output_json=json_flag)
